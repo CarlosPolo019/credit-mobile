@@ -3,5 +3,6 @@
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:fontFamily">sans</item>
         <item name="android:colorAccent">#00D280</item>
+        <item name="android:windowBackground">@drawable/splash_background</item>
     </style>
 </resources>
