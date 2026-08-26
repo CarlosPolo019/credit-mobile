@@ -66,7 +66,7 @@ export function RegisterPage({ navigation }: RegisterPageProps) {
       <Screen contentClassName="pb-8">
         <View className="relative my-2 flex justify-center py-4">
           <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.6} className="absolute -left-3 z-10 p-3">
-            <ArrowLeft color={isDarkMode ? colors.violet400 : colors.violet700} size={24} />
+            <ArrowLeft color={isDarkMode ? colors.brand400 : colors.brand700} size={24} />
           </TouchableOpacity>
           <Text className="text-center font-semibold text-gray-800 dark:text-neutral-50">Crear cuenta</Text>
         </View>

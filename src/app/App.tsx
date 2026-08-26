@@ -12,7 +12,7 @@ export function App() {
     colors: {
       ...(isDarkMode ? DarkTheme.colors : DefaultTheme.colors),
       background: isDarkMode ? colors.neutral800 : colors.white,
-      primary: isDarkMode ? colors.violet400 : colors.violet700,
+      primary: isDarkMode ? colors.brand400 : colors.brand700,
     },
   };
 

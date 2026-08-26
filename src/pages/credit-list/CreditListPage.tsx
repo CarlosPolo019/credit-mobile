@@ -92,7 +92,7 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
     <View className="flex-1 bg-white px-6 dark:bg-neutral-950">
       <View className="relative my-2 flex justify-center py-4">
         <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.6} className="absolute -left-3 z-10 p-3">
-          <ArrowLeft color={isDarkMode ? colors.violet400 : colors.violet700} size={24} />
+          <ArrowLeft color={isDarkMode ? colors.brand400 : colors.brand700} size={24} />
         </TouchableOpacity>
         <Text className="text-center font-semibold text-gray-800 dark:text-neutral-50">Consulta</Text>
       </View>
@@ -112,14 +112,14 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
             onChangeText={setSearchText}
           />
           <TouchableOpacity onPress={() => filtersSheetRef.current?.present()} activeOpacity={0.6} hitSlop={8}>
-            <SlidersVertical color={isDarkMode ? colors.violet400 : colors.violet600} size={20} />
+            <SlidersVertical color={isDarkMode ? colors.brand400 : colors.brand700} size={20} />
           </TouchableOpacity>
         </View>
       </View>
 
       {isInitialLoad ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator color={isDarkMode ? colors.violet400 : colors.violet700} />
+          <ActivityIndicator color={isDarkMode ? colors.brand400 : colors.brand700} />
         </View>
       ) : error ? (
         <ErrorMessage>{error}</ErrorMessage>
@@ -170,8 +170,8 @@ function CreditListItem({ credit }: CreditListItemProps) {
       accessibilityLabel={`${credit.clientName}, ${formatCurrency(credit.amount)}`}
     >
       <View className="flex-row items-center gap-4 border-t border-gray-200 bg-white py-4 dark:border-neutral-800 dark:bg-neutral-950">
-        <View className="size-10 items-center justify-center rounded-full bg-violet-100 dark:bg-neutral-800">
-          <CreditCard color={isDarkMode ? colors.violet400 : colors.violet700} size={20} />
+        <View className="size-10 items-center justify-center rounded-full bg-brand-100 dark:bg-neutral-800">
+          <CreditCard color={isDarkMode ? colors.brand400 : colors.brand700} size={20} />
         </View>
         <View className="flex-1">
           <Text className="font-semibold text-gray-900 dark:text-neutral-50">{credit.clientName}</Text>

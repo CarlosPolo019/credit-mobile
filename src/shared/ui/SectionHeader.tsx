@@ -27,8 +27,8 @@ export function SectionHeader({
       </Text>
       {onToggleSort ? (
         <TouchableOpacity onPress={onToggleSort} activeOpacity={0.6} className="flex-row items-center gap-1">
-          <Text className="text-xs font-semibold text-violet-700 dark:text-violet-400">{sortLabel}</Text>
-          <ArrowIcon color={isDarkMode ? colors.violet400 : colors.violet700} size={14} />
+          <Text className="text-xs font-semibold text-brand-700 dark:text-brand-400">{sortLabel}</Text>
+          <ArrowIcon color={isDarkMode ? colors.brand400 : colors.brand700} size={14} />
         </TouchableOpacity>
       ) : null}
     </View>

@@ -2,6 +2,6 @@
     <style name="AppTheme" parent="android:style/Theme.Material.Light.NoActionBar">
         <item name="android:windowLightStatusBar">true</item>
         <item name="android:fontFamily">sans</item>
-        <item name="android:colorAccent">#073d3b</item>
+        <item name="android:colorAccent">#00D280</item>
     </style>
 </resources>

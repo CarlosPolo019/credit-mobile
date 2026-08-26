@@ -15,16 +15,18 @@ type ButtonProps = {
 };
 
 const containerClasses: Record<ButtonVariant, string> = {
-  primary: "bg-violet-700",
+  primary: "bg-brand-600",
   secondary: "border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900",
   ghost: "bg-transparent",
   danger: "bg-red-600",
 };
 
 const textClasses: Record<ButtonVariant, string> = {
-  primary: "text-white",
+  // Dark text on the bright brand green reads better than white — same
+  // pairing as the primary CTA on credit-web.
+  primary: "text-ink",
   secondary: "text-gray-900 dark:text-neutral-50",
-  ghost: "text-violet-700 dark:text-violet-400",
+  ghost: "text-brand-700 dark:text-brand-400",
   danger: "text-white",
 };
 
@@ -49,7 +51,15 @@ export function Button({
       className={`min-h-12 flex-row items-center justify-center gap-2 rounded-lg px-4 ${containerClasses[variant]} ${disabledClass} ${className ?? ""}`}
     >
       {loading ? (
-        <ActivityIndicator color={variant === "secondary" ? (isDarkMode ? colors.violet400 : colors.violet700) : colors.white} />
+        <ActivityIndicator
+          color={
+            variant === "secondary"
+              ? (isDarkMode ? colors.brand400 : colors.brand700)
+              : variant === "primary"
+                ? colors.ink
+                : colors.white
+          }
+        />
       ) : (
         <>
           {icon}

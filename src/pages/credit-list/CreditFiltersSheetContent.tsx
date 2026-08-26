@@ -36,7 +36,7 @@ export function CreditFiltersSheetContent({ filters, onApply, onClose }: CreditF
     <View className="flex-1 bg-white px-6 dark:bg-neutral-950">
       <View className="relative my-2 flex justify-center py-4">
         <TouchableOpacity onPress={onClose} activeOpacity={0.6} className="absolute -left-3 z-10 p-3">
-          <ArrowLeft color={isDarkMode ? colors.violet400 : colors.violet700} size={24} />
+          <ArrowLeft color={isDarkMode ? colors.brand400 : colors.brand700} size={24} />
         </TouchableOpacity>
         <Text className="text-center font-semibold text-gray-800 dark:text-neutral-50">Filtros</Text>
       </View>
@@ -90,11 +90,11 @@ function FilterSection<TValue extends string>({ title, options, selectedValue, o
             className={`flex-1 items-center justify-center rounded-lg py-3 ${
               selectedValue === option.value ? "" : "border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
             }`}
-            style={selectedValue === option.value ? { backgroundColor: colors.violet100 } : undefined}
+            style={selectedValue === option.value ? { backgroundColor: colors.brand100 } : undefined}
           >
             <Text
               className={`text-sm font-semibold ${selectedValue === option.value ? "" : "text-gray-900 dark:text-neutral-50"}`}
-              style={selectedValue === option.value ? { color: colors.violet700 } : undefined}
+              style={selectedValue === option.value ? { color: colors.brand700 } : undefined}
             >
               {option.label}
             </Text>
