@@ -5,6 +5,7 @@
 
 ## Proposito
 - Generar APK/AAB release configurables sin versionar secretos.
+- Este flujo solo se ejecuta cuando el usuario pide explicitamente compilar Android.
 
 ## Participantes
 - `package.json`
@@ -27,6 +28,11 @@ sequenceDiagram
   Gradle-->>Dev: app-release artifact
 ```
 
+## Politica De Ejecucion
+- No ejecutar `npm run build:apk` ni `npm run build:aab` por cambios de UI TypeScript, contrato REST, docs, estilos NativeWind o validaciones locales.
+- Usar `npm run typecheck`, `npm run lint` y `npm test` como validacion normal cuando el cambio no toca Android nativo.
+- Pedir orden explicita antes de compilar si cambiaron Gradle, AndroidManifest, permisos, package nativo, signing, assets nativos, autolinking o versionado release.
+
 ## Configuracion
 - Local emulator default: `http://10.0.2.2:8080`.
 - Release: usar `CREDIT_API_BASE_URL=https://...`.
@@ -38,5 +44,5 @@ sequenceDiagram
 - `generated.env.ts` y `debug.keystore` no se versionan.
 
 ## Validacion
-- `npm run build:apk`
-- `npm run build:aab`
+- `npm run build:apk` solo con orden explicita del usuario.
+- `npm run build:aab` solo con orden explicita del usuario.

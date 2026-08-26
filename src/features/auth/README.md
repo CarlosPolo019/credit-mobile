@@ -11,5 +11,5 @@
 
 ## Risks / TODOs
 - No almacenar credenciales.
-- Mantener contrato con `/api/v1/auth/login` usando `{ username, password }`, aunque la UI diga cedula.
+- Mantener contrato con `/api/v1/auth/login` usando `{ username, password }`; `username` puede ser cedula registrada o usuario demo.
 - Mantener contrato con `/api/v1/auth/register` usando `{ fullName, document, password }`.

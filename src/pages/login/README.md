@@ -1,7 +1,7 @@
 # Login Page
 
 ## Purpose
-- Capturar cedula y clave para crear sesion.
+- Capturar identificador y clave para crear sesion.
 
 ## Key Files -> Role
 - `LoginPage.tsx`: formulario publico y errores.
@@ -14,3 +14,4 @@
 - No persistir passwords.
 - No navegar manualmente si `SessionProvider` ya cambia el stack.
 - Ofrecer acceso a `Register` sin requerir sesion.
+- No forzar teclado numerico en login: el backend acepta `username` y conserva usuario demo.

@@ -4,7 +4,7 @@
 - Pantallas de navegacion que componen features, entities y shared UI.
 
 ## Key Files -> Role
-- `login/`: ingreso por cedula y clave.
+- `login/`: ingreso por identificador y clave.
 - `register/`: alta de usuario por cedula.
 - `home/`: accesos principales.
 - `credit-create/`: registro.

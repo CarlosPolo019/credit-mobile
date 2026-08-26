@@ -6,7 +6,7 @@ React Native Android client for the Fya credit technical test.
 - React Native 0.83.0
 - React 19.2.0
 - TypeScript
-- NativeWind with Blossom visual tokens
+- NativeWind, layout from `challenge-blossom`, brand tokens from Fya Social Capital (`brand-*`/`ink`, shared with `credit-web`)
 - React Navigation 7
 - Axios
 - lucide-react-native
@@ -48,6 +48,8 @@ npm run android
 ```
 
 ## Build APK
+Run this only when an Android build is explicitly needed.
+
 ```bash
 npm run build:apk
 ```
@@ -59,6 +61,8 @@ android/app/build/outputs/apk/release/app-release.apk
 ```
 
 ## Build AAB
+Run this only when an Android build is explicitly needed.
+
 ```bash
 npm run build:aab
 ```
@@ -86,8 +90,8 @@ Gradle consumes:
 - `RELEASE_KEY_PASSWORD`
 
 ## Features
-- Login with JWT.
-- Register account with document and password.
+- Login with backend `{ username, password }` and JWT.
+- Register account with numeric document and password.
 - Token storage in Keychain.
 - Register credit.
 - Query active credits.
@@ -96,8 +100,8 @@ Gradle consumes:
 - Session-expired handling.
 
 ## Documentacion Operativa
-- `AGENTS.md`: gobierno general para agentes.
-- `src/**/AGENTS.md`: reglas por capa/slice FSD.
+- `AGENTS.md`: gobierno general para agentes (unico `AGENTS.md` del repo; incluye el mapa de documentacion).
+- `src/**/README.md`: descripcion por capa/slice FSD (proposito, archivos clave, riesgos).
 - `docs/README.md`: planes y reglas tecnicas.
 - `docs/permissions-rules.md`: permisos Android.
 - `knowledge/README.md`: flujos actuales.
@@ -112,3 +116,5 @@ npm run typecheck
 npm run lint
 npm test
 ```
+
+APK/AAB builds are intentionally slow and should only be run when explicitly requested or when Android native/release files changed.

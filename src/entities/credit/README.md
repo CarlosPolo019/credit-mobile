@@ -6,6 +6,7 @@
 ## Key Files -> Role
 - `validation.ts`: normaliza input, sort y direction.
 - `format.ts`: moneda y fecha.
+- `payment.ts`: `estimateCreditPayment` — cuota/total estimados (amortizacion francesa, tasa mensual), mismo puerto que `credit-web/lib/creditPayment.js`. Solo para el sheet de confirmacion; no se envia al backend.
 - `types.ts`: contratos locales de credito.
 
 ## External Deps

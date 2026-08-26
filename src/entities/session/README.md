@@ -15,4 +15,4 @@
 ## Risks / TODOs
 - Limpiar sesion al recibir `401`.
 - No exponer token en logs.
-- La cedula/documento es el identificador visible del usuario.
+- Login usa `username` del backend; registro usa `document` numerico como identidad del usuario registrado.
