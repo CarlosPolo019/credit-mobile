@@ -48,6 +48,7 @@ sequenceDiagram
 | HTTP | Axios |
 | Icons | lucide-react-native |
 | Session | react-native-keychain |
+| PDF export | react-native-blob-util (authenticated download) + react-native-share (open/share) — the PDF itself is rendered server-side by `credit-backend` |
 
 ## Feature-Sliced Structure
 
@@ -111,8 +112,24 @@ The npm lifecycle writes `src/shared/config/generated.env.ts` before Android bui
 - Register account with numeric document and password.
 - Token storage in Keychain.
 - Register credit with a confirmation step (estimated monthly installment/total) before submitting.
-- Query active credits: filter by client, document, salesperson; sort by date or amount.
+- Query active credits: filter by client, document, salesperson (select); sort by date or amount.
+- Credit detail: view, edit, delete, audit history (who changed what), and export as a server-rendered PDF.
+- Animated branded splash screen and app icon.
 - Session-expired handling.
+
+## Capturas
+
+| Login | Home |
+|---|---|
+| ![Login](docs/screenshots/login.png) | ![Home](docs/screenshots/home.png) |
+
+| Consultar créditos | Detalle de crédito |
+|---|---|
+| ![Consultar créditos](docs/screenshots/credit-list.png) | ![Detalle de crédito](docs/screenshots/credit-detail.png) |
+
+| Editar crédito | Eliminar (confirmación) |
+|---|---|
+| ![Editar crédito](docs/screenshots/credit-edit.png) | ![Confirmar eliminación](docs/screenshots/credit-delete-confirm.png) |
 
 ## Build APK
 

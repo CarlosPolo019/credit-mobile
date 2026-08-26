@@ -151,7 +151,9 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
               onToggleSort={toggleSort}
             />
           )}
-          renderItem={({ item }) => <CreditListItem credit={item} />}
+          renderItem={({ item }) => (
+            <CreditListItem credit={item} onPress={() => navigation.navigate("CreditDetail", { creditId: item.id })} />
+          )}
           renderSectionFooter={() => credits.length === 0 ? <SectionFooterMessage>No hay créditos activos para mostrar.</SectionFooterMessage> : null}
           stickySectionHeadersEnabled={false}
           contentContainerStyle={styles.listContent}
@@ -178,16 +180,18 @@ const styles = StyleSheet.create({
 
 type CreditListItemProps = {
   credit: Credit;
+  onPress: () => void;
 };
 
-function CreditListItem({ credit }: CreditListItemProps) {
+function CreditListItem({ credit, onPress }: CreditListItemProps) {
   const isDarkMode = useColorScheme() === "dark";
 
   return (
     <TouchableHighlight
+      onPress={onPress}
       underlayColor={isDarkMode ? colors.neutral600 : colors.gray300}
-      accessibilityRole="text"
-      accessibilityLabel={`${credit.clientName}, ${formatCurrency(credit.amount)}`}
+      accessibilityRole="button"
+      accessibilityLabel={`Ver detalle de ${credit.clientName}, ${formatCurrency(credit.amount)}`}
     >
       <View className="flex-row items-center gap-4 border-t border-gray-200 bg-white py-4 dark:border-neutral-800 dark:bg-neutral-950">
         <View className="size-10 items-center justify-center rounded-full bg-brand-100 dark:bg-neutral-800">

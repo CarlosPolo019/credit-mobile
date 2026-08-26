@@ -10,6 +10,7 @@ type CreditConfirmSheetContentProps = {
   onCancel: () => void;
   onConfirm: () => void;
   isSubmitting: boolean;
+  mode?: "create" | "edit";
 };
 
 function SummaryRow({ label, value, emphasis }: { label: string; value: string; emphasis?: boolean }) {
@@ -28,7 +29,8 @@ function SummaryRow({ label, value, emphasis }: { label: string; value: string; 
  * instead of after the client has already been notified by email. Mirrors
  * `credit-web/pages/credits/CreditConfirmDialog.jsx`.
  */
-export function CreditConfirmSheetContent({ credit, salespersonLabel, onCancel, onConfirm, isSubmitting }: CreditConfirmSheetContentProps) {
+export function CreditConfirmSheetContent({ credit, salespersonLabel, onCancel, onConfirm, isSubmitting, mode = "create" }: CreditConfirmSheetContentProps) {
+  const isEdit = mode === "edit";
   const fullName = [credit.clientFirstName, credit.clientSecondName, credit.clientFirstSurname, credit.clientSecondSurname]
     .filter(Boolean)
     .join(" ");
@@ -39,7 +41,9 @@ export function CreditConfirmSheetContent({ credit, salespersonLabel, onCancel, 
       <View className="items-center py-4">
         <Text className="text-center font-semibold text-gray-800 dark:text-neutral-50">¿Todo correcto?</Text>
         <Text className="mt-1 text-center text-sm text-gray-500 dark:text-neutral-400">
-          Revisa los datos antes de registrar. Una vez confirmado, se notifica al cliente por correo.
+          {isEdit
+            ? "Revisa los datos antes de guardar los cambios del crédito."
+            : "Revisa los datos antes de registrar. Una vez confirmado, se notifica al cliente por correo."}
         </Text>
       </View>
 
@@ -59,7 +63,7 @@ export function CreditConfirmSheetContent({ credit, salespersonLabel, onCancel, 
       </Text>
 
       <View className="mt-auto gap-3 pb-4 pt-6">
-        <Button title="Confirmar y registrar" onPress={onConfirm} loading={isSubmitting} />
+        <Button title={isEdit ? "Confirmar cambios" : "Confirmar y registrar"} onPress={onConfirm} loading={isSubmitting} />
         <Button title="Revisar datos" variant="secondary" onPress={onCancel} disabled={isSubmitting} />
       </View>
     </View>

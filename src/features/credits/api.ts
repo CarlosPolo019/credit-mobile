@@ -1,4 +1,4 @@
-import type { CreditFilters, CreditListResponse, CreditPayload } from "@/entities/credit/types";
+import type { Credit, CreditAuditEntry, CreditFilters, CreditListResponse, CreditPayload } from "@/entities/credit/types";
 import { normalizeDirection, normalizeSort } from "@/entities/credit/validation";
 import { api } from "@/shared/api/client";
 
@@ -18,4 +18,23 @@ export async function listCredits(filters: CreditFilters) {
     },
   });
   return response.data as CreditListResponse;
+}
+
+export async function getCredit(id: string) {
+  const response = await api.get(`/api/v1/credits/${id}`);
+  return response.data as Credit;
+}
+
+export async function updateCredit(id: string, payload: CreditPayload) {
+  const response = await api.put(`/api/v1/credits/${id}`, payload);
+  return response.data as Credit;
+}
+
+export async function deleteCredit(id: string) {
+  await api.delete(`/api/v1/credits/${id}`);
+}
+
+export async function getCreditAudit(id: string) {
+  const response = await api.get(`/api/v1/credits/${id}/audit`);
+  return response.data as CreditAuditEntry[];
 }

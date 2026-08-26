@@ -12,6 +12,8 @@ Guia operativa para agentes que trabajen en `credit-mobile`.
 - UI: patron `challenge-blossom` (layout, `className`, `lucide-react-native`, bottom sheets y listas compactas) con la paleta de marca Fya Social Capital (`brand-*`/`ink`, ver `src/shared/ui/README.md`), no la paleta violeta original de Blossom.
 - Config: `CREDIT_API_BASE_URL` genera `src/shared/config/generated.env.ts`.
 - Android: solo permiso `INTERNET`; release APK/AAB por Gradle.
+- Creditos: crear, listar, ver detalle, editar, eliminar, exportar a PDF (generado en `credit-backend`, no en el dispositivo) e historial de auditoria — ver `knowledge/credits/current-credit-detail-flow.md`.
+- Splash: `src/app/Splash.tsx` (branded, `Animated` de RN, sin libreria nativa nueva) + `android/.../drawable/splash_background.xml` para el arranque en frio.
 
 ## Protocolo De Inicio
 1. Ejecutar `pwd` y confirmar que estas en `credit-mobile`.

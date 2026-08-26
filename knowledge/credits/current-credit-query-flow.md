@@ -28,6 +28,10 @@ sequenceDiagram
   Feature-->>Page: Rows
 ```
 
+## Decisiones
+- El filtro de "Comercial" es un select de chips (`FilterSection`, `wrap`), no texto libre: las opciones se arman a partir de los `salespersonName` distintos de un fetch inicial sin filtrar (no hay endpoint de lista de comerciales), guardado aparte de `credits` para que no se reduzca a una sola opcion una vez que ya hay un filtro aplicado.
+- Tocar una fila navega a `CreditDetail`.
+
 ## Errores
 - Error de red: mostrar banner y conservar control de filtros.
 - Sin resultados: mostrar estado vacio.

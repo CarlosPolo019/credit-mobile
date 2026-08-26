@@ -2,6 +2,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ActivityIndicator, View } from "react-native";
 import { useSession } from "@/entities/session/SessionContext";
 import { CreditCreatePage } from "@/pages/credit-create/CreditCreatePage";
+import { CreditDetailPage } from "@/pages/credit-detail/CreditDetailPage";
+import { CreditEditPage } from "@/pages/credit-detail/CreditEditPage";
 import { CreditListPage } from "@/pages/credit-list/CreditListPage";
 import { HomePage } from "@/pages/home/HomePage";
 import { LoginPage } from "@/pages/login/LoginPage";
@@ -14,6 +16,8 @@ export type RootStackParamList = {
   Home: undefined;
   CreditCreate: undefined;
   CreditList: undefined;
+  CreditDetail: { creditId: string };
+  CreditEdit: { creditId: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -41,6 +45,8 @@ export function AppRouter() {
           <Stack.Screen name="Home" component={HomePage} options={{ title: "Créditos" }} />
           <Stack.Screen name="CreditCreate" component={CreditCreatePage} options={{ title: "Registrar crédito" }} />
           <Stack.Screen name="CreditList" component={CreditListPage} options={{ title: "Consultar créditos" }} />
+          <Stack.Screen name="CreditDetail" component={CreditDetailPage} options={{ title: "Detalle de crédito" }} />
+          <Stack.Screen name="CreditEdit" component={CreditEditPage} options={{ title: "Editar crédito" }} />
         </>
       ) : (
         <>

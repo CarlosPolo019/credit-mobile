@@ -12,7 +12,10 @@ export type Credit = {
   registeredByUserId?: string;
   salespersonDocument?: string;
   salespersonName: string;
+  isActive?: boolean;
   createdAt?: string;
+  updatedAt?: string;
+  deletedAt?: string | null;
 };
 
 export type CreditSortBy = "createdAt" | "amount";
@@ -40,4 +43,20 @@ export type CreditPayload = {
 export type CreditListResponse = {
   items?: Credit[];
   total?: number;
+};
+
+export type CreditFieldChange = {
+  before: string;
+  after: string;
+};
+
+export type CreditAuditEntry = {
+  id: string;
+  creditId: string;
+  action: "UPDATED" | "DELETED";
+  changedByUserId?: string;
+  changedByDocument?: string;
+  changedByName?: string;
+  changedAt: string;
+  changes: Record<string, CreditFieldChange>;
 };
