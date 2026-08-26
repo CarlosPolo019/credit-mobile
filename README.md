@@ -5,14 +5,16 @@ React Native Android client for the Fya credit technical test.
 ## Stack
 - React Native 0.83.0
 - React 19.2.0
-- JavaScript only
+- TypeScript
+- NativeWind with Blossom visual tokens
 - React Navigation 7
 - Axios
+- lucide-react-native
 - react-native-keychain
 
 ## Estructura FSD
 - `src/app`: providers y navegacion.
-- `src/pages`: `login`, `home`, `credit-create`, `credit-list`.
+- `src/pages`: `login`, `register`, `home`, `credit-create`, `credit-list`.
 - `src/features`: APIs de `auth` y `credits`.
 - `src/entities`: sesion y reglas/formato de creditos.
 - `src/shared`: API client, config, storage y UI.
@@ -36,8 +38,8 @@ CREDIT_API_BASE_URL=https://your-render-backend.example.com npm run build:apk
 CREDIT_API_BASE_URL=https://your-render-backend.example.com npm run build:aab
 ```
 
-The npm lifecycle writes `src/shared/config/generated.env.js` before Android build/start commands. The default keeps emulator development working against a backend on localhost.
-`generated.env.js` is generated and ignored by Git; change `CREDIT_API_BASE_URL`, not that file.
+The npm lifecycle writes `src/shared/config/generated.env.ts` before Android build/start commands. The default keeps emulator development working against a backend on localhost.
+`generated.env.ts` is generated and ignored by Git; change `CREDIT_API_BASE_URL`, not that file.
 For release, use a real HTTPS backend URL.
 
 ## Run Android
@@ -85,6 +87,7 @@ Gradle consumes:
 
 ## Features
 - Login with JWT.
+- Register account with document and password.
 - Token storage in Keychain.
 - Register credit.
 - Query active credits.
@@ -102,3 +105,10 @@ Gradle consumes:
 - `knowledge/credits/current-credit-registration-flow.md`: registro.
 - `knowledge/credits/current-credit-query-flow.md`: consulta.
 - `knowledge/android/current-android-build-and-signing-flow.md`: build y firma.
+
+## Quality
+```bash
+npm run typecheck
+npm run lint
+npm test
+```

@@ -4,13 +4,12 @@
 - Registrar un credito completo contra backend.
 
 ## Key Files -> Role
-- `CreditCreatePage.jsx`: formulario, validacion y submit.
+- `CreditCreatePage.tsx`: formulario, validacion y submit.
 
 ## External Deps
-- `entities/credit/validation.js`
-- `features/credits/api.js`
+- `entities/credit/validation.ts`
+- `features/credits/api.ts`
 
 ## Risks / TODOs
 - Backend genera fecha oficial.
 - Frontend valida UX; backend es la autoridad.
-

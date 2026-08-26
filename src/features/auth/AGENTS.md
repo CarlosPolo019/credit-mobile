@@ -4,12 +4,12 @@
 - Exponer operaciones de autenticacion.
 
 ## Key Files -> Role
-- `api.js`: request de login al backend.
+- `api.ts`: requests de login y registro al backend.
 
 ## External Deps
-- `shared/api/client.js`
+- `shared/api/client.ts`
 
 ## Risks / TODOs
 - No almacenar credenciales.
-- Mantener contrato con `/api/v1/auth/login`.
-
+- Mantener contrato con `/api/v1/auth/login` usando `{ username, password }`, aunque la UI diga cedula.
+- Mantener contrato con `/api/v1/auth/register` usando `{ fullName, document, password }`.

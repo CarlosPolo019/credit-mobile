@@ -1,4 +1,4 @@
-import { generatedConfig } from "./generated.env.js";
+import { generatedConfig } from "./generated.env";
 
 export const config = {
   apiBaseUrl: generatedConfig.apiBaseUrl,

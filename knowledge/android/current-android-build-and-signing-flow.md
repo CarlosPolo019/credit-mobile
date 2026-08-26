@@ -21,7 +21,7 @@ sequenceDiagram
   participant Script
   participant Gradle
   Dev->>NPM: npm run build:apk/aab
-  NPM->>Script: write generated.env.js
+  NPM->>Script: write generated.env.ts
   NPM->>Script: ensure debug keystore if needed
   NPM->>Gradle: assembleRelease or bundleRelease
   Gradle-->>Dev: app-release artifact
@@ -35,9 +35,8 @@ sequenceDiagram
 
 ## Errores
 - Si no hay secrets de release, Gradle cae a debug keystore generado localmente.
-- `generated.env.js` y `debug.keystore` no se versionan.
+- `generated.env.ts` y `debug.keystore` no se versionan.
 
 ## Validacion
 - `npm run build:apk`
 - `npm run build:aab`
-

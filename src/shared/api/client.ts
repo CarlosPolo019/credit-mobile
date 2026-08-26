@@ -1,10 +1,15 @@
 import axios from "axios";
-import { config } from "../config/env.js";
+import { config } from "@/shared/config/env";
 
-let getToken = () => null;
-let onUnauthorized = () => {};
+type ApiOptions = {
+  getToken?: () => string | null;
+  onUnauthorized?: () => void;
+};
 
-export function configureApi(options) {
+let getToken: () => string | null = () => null;
+let onUnauthorized: () => void = () => {};
+
+export function configureApi(options: ApiOptions) {
   getToken = options.getToken ?? getToken;
   onUnauthorized = options.onUnauthorized ?? onUnauthorized;
 }

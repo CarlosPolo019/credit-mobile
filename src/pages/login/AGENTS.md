@@ -1,16 +1,16 @@
 # Login Page
 
 ## Purpose
-- Capturar credenciales y crear sesion.
+- Capturar cedula y clave para crear sesion.
 
 ## Key Files -> Role
-- `LoginPage.jsx`: formulario publico y errores.
+- `LoginPage.tsx`: formulario publico y errores.
 
 ## External Deps
-- `entities/session/SessionContext.jsx`
-- `features/auth/api.js`
+- `entities/session/SessionContext.tsx`
+- `features/auth/api.ts`
 
 ## Risks / TODOs
 - No persistir passwords.
 - No navegar manualmente si `SessionProvider` ya cambia el stack.
-
+- Ofrecer acceso a `Register` sin requerir sesion.

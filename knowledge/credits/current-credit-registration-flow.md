@@ -7,10 +7,10 @@
 - Registrar un credito completo y dejar que el backend encole el correo.
 
 ## Participantes
-- `pages/credit-create/CreditCreatePage.jsx`
-- `entities/credit/validation.js`
-- `features/credits/api.js`
-- `shared/api/client.js`
+- `pages/credit-create/CreditCreatePage.tsx`
+- `entities/credit/validation.ts`
+- `features/credits/api.ts`
+- `shared/api/client.ts`
 
 ## Flujo
 ```mermaid
@@ -33,7 +33,7 @@ sequenceDiagram
 - Sesion expirada: interceptor limpia sesion.
 
 ## Validacion
+- `npm run typecheck`
 - `npm run lint`
 - `npm test`
 - Prueba manual: crear credito y confirmar mensaje de exito.
-

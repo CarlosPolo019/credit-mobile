@@ -1,4 +1,4 @@
-import { validateCredit } from "../src/entities/credit/validation.js";
+import { validateCredit } from "@/entities/credit/validation";
 
 describe("validateCredit", () => {
   it("normalizes valid input", () => {

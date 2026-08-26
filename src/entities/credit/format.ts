@@ -1,4 +1,4 @@
-export function formatCurrency(value) {
+export function formatCurrency(value: number | string) {
   return new Intl.NumberFormat("es-CO", {
     style: "currency",
     currency: "COP",
@@ -6,7 +6,7 @@ export function formatCurrency(value) {
   }).format(Number(value ?? 0));
 }
 
-export function formatDate(value) {
+export function formatDate(value?: string) {
   if (!value) return "-";
   const date = new Date(value);
   return Number.isNaN(date.getTime()) ? "-" : date.toLocaleDateString("es-CO");

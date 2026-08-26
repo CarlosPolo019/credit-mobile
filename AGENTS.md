@@ -3,13 +3,14 @@
 Guia operativa para agentes que trabajen en `credit-mobile`.
 
 ## Mapa Rapido
-- Stack: React Native 0.83.0, React 19.2.0, JavaScript, React Navigation 7.
+- Stack: React Native 0.83.0, React 19.2.0, TypeScript, NativeWind, React Navigation 7.
 - Plataforma objetivo: Android.
 - Runtime source: `src/` con FSD simplificado.
 - Capas: `app`, `pages`, `features`, `entities`, `shared`.
 - API: REST contra Spring Boot; nunca Firestore directo.
 - Sesion: JWT en `react-native-keychain`.
-- Config: `CREDIT_API_BASE_URL` genera `src/shared/config/generated.env.js`.
+- UI: patron `challenge-blossom` con colores Blossom, `className`, `lucide-react-native`, bottom sheets y listas compactas.
+- Config: `CREDIT_API_BASE_URL` genera `src/shared/config/generated.env.ts`.
 - Android: solo permiso `INTERNET`; release APK/AAB por Gradle.
 
 ## Protocolo De Inicio
@@ -20,10 +21,10 @@ Guia operativa para agentes que trabajen en `credit-mobile`.
 5. Buscar usos con `rg` antes de cambiar contratos o imports.
 
 ## Protocolo De Cierre
-1. Ejecutar `npm run check:js-only`, lint y tests.
+1. Ejecutar `npm run typecheck`, lint y tests.
 2. Para cambios Android, ejecutar APK/AAB si el entorno lo permite.
 3. Actualizar `src/**/AGENTS.md`, `docs/**` o `knowledge/**` si cambio comportamiento.
-4. Revisar que `.env`, build outputs, `generated.env.js` y keystores no productivos no esten staged.
+4. Revisar que `.env`, build outputs, `generated.env.ts` y keystores no productivos no esten staged.
 5. Crear commit Conventional Commit por checkpoint funcional.
 
 ## Protocolo De Subagentes
@@ -41,10 +42,11 @@ Reglas:
 - Cerrar subagentes al terminar.
 
 ## Convenciones
-- JavaScript-only estricto: no crear `.ts` ni `.tsx`.
-- Componentes en `.jsx`; helpers, API y config en `.js`.
+- TypeScript permitido y preferido en `src/**`; mantener `credit-web` JavaScript-only.
+- Componentes en `.tsx`; helpers, API y config en `.ts`.
+- NativeWind es la capa visual principal; usar `colors.ts` para tokens compartidos e iconos de `lucide-react-native`.
 - UI copy puede estar en espanol; docs y codigo deben ser claros y consistentes.
-- `generated.env.js` es generado, no se edita manualmente.
+- `generated.env.ts` es generado, no se edita manualmente.
 - `debug.keystore` es solo fallback local generado; produccion usa secrets.
 - No versionar `.env`, keystores productivos, passwords, tokens ni API keys.
 
@@ -59,7 +61,7 @@ Reglas:
 ## Comandos
 - `npm install`
 - `npm run android`
-- `npm run check:js-only`
+- `npm run typecheck`
 - `npm run lint`
 - `npm test`
 - `npm run build:apk`
@@ -70,9 +72,9 @@ Reglas:
 - Commit documental sugerido: `docs: add mobile agent governance and knowledge base`.
 
 ## Definition Of Done
-- Login restaura y limpia sesion correctamente.
+- Registro/login por cedula restaura y limpia sesion correctamente.
 - Registro y consulta de creditos llaman al backend Spring Boot.
 - Filtros y sorting usan campos allowlisted.
 - APK y AAB se generan con `CREDIT_API_BASE_URL` correcto.
-- No hay `.ts/.tsx` propios.
+- TypeScript, NativeWind y alias `@/` compilan con `npm run typecheck`.
 - README, `docs/**`, `knowledge/**` y `src/**/AGENTS.md` quedan sincronizados.

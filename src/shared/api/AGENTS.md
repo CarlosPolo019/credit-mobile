@@ -4,12 +4,11 @@
 - Configurar Axios, token Bearer y manejo global de `401`.
 
 ## Key Files -> Role
-- `client.js`: instancia Axios, `configureApi`, interceptores.
+- `client.ts`: instancia Axios, `configureApi`, interceptores.
 
 ## External Deps
 - Axios.
 
 ## Risks / TODOs
-- `baseURL` viene de `shared/config/env.js`.
+- `baseURL` viene de `shared/config/env.ts`.
 - No hardcodear tokens ni secretos.
-

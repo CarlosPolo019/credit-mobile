@@ -4,14 +4,15 @@
 - `active`
 
 ## Proposito
-- Autenticar al usuario demo y conservar la sesion JWT en Keychain.
+- Registrar o autenticar por cedula y conservar la sesion JWT en Keychain.
 
 ## Participantes
-- `pages/login/LoginPage.jsx`
-- `features/auth/api.js`
-- `entities/session/SessionContext.jsx`
-- `shared/lib/storage/sessionStorage.js`
-- `shared/api/client.js`
+- `pages/login/LoginPage.tsx`
+- `pages/register/RegisterPage.tsx`
+- `features/auth/api.ts`
+- `entities/session/SessionContext.tsx`
+- `shared/lib/storage/sessionStorage.ts`
+- `shared/api/client.ts`
 
 ## Flujo
 ```mermaid
@@ -21,13 +22,15 @@ sequenceDiagram
   participant Session
   participant API
   participant Keychain
-  User->>Login: Submit credentials
-  Login->>Session: login(username,password)
+  User->>Login: Submit cedula/password
+  Login->>Session: login(document,password)
   Session->>API: POST /api/v1/auth/login
   API-->>Session: JWT
   Session->>Keychain: Persist session
   Session-->>User: Authenticated stack
 ```
+
+Registro usa `POST /api/v1/auth/register` con `fullName`, `document` y `password`, y persiste la misma respuesta de sesion.
 
 ## Errores
 - Credenciales invalidas: mostrar banner y no guardar sesion.
@@ -36,5 +39,4 @@ sequenceDiagram
 
 ## Validacion
 - `npm test`
-- Prueba manual: login, cerrar app, abrir app y verificar restauracion.
-
+- Prueba manual: registrar cedula, cerrar app, abrir app y verificar restauracion; luego logout/login con la misma cedula.

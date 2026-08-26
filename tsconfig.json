@@ -1,0 +1,22 @@
+{
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react-native",
+    "lib": ["ESNext"],
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "types": ["jest", "nativewind/types"]
+  },
+  "include": [
+    "App.js",
+    "index.js",
+    "src/**/*",
+    "__tests__/**/*",
+    "nativewind-env.d.ts"
+  ],
+  "exclude": ["node_modules", "android/build", "android/app/build"]
+}

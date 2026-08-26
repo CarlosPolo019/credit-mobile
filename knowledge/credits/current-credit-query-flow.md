@@ -7,10 +7,12 @@
 - Consultar creditos activos con filtros y ordenamiento.
 
 ## Participantes
-- `pages/credit-list/CreditListPage.jsx`
-- `features/credits/api.js`
-- `entities/credit/format.js`
-- `entities/credit/validation.js`
+- `pages/credit-list/CreditListPage.tsx`
+- `pages/credit-list/CreditFiltersSheetContent.tsx`
+- `features/credits/api.ts`
+- `entities/credit/format.ts`
+- `entities/credit/validation.ts`
+- `shared/ui/BottomSheetModal.tsx`
 
 ## Flujo
 ```mermaid
@@ -19,7 +21,7 @@ sequenceDiagram
   participant Page
   participant Feature
   participant Backend
-  User->>Page: Open list or change filters
+  User->>Page: Open list, search or change bottom-sheet filters
   Page->>Feature: listCredits(filters)
   Feature->>Backend: GET /api/v1/credits
   Backend-->>Feature: Active credits
@@ -32,5 +34,5 @@ sequenceDiagram
 - Sesion expirada: volver al stack publico.
 
 ## Validacion
+- `npm run typecheck`
 - Prueba manual: filtrar por nombre/documento/comercial y alternar sort fecha/monto.
-

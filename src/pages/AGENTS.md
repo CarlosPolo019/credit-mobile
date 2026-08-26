@@ -4,7 +4,8 @@
 - Pantallas de navegacion que componen features, entities y shared UI.
 
 ## Key Files -> Role
-- `login/`: ingreso.
+- `login/`: ingreso por cedula y clave.
+- `register/`: alta de usuario por cedula.
 - `home/`: accesos principales.
 - `credit-create/`: registro.
 - `credit-list/`: consulta.
@@ -13,6 +14,6 @@
 - React Navigation route props.
 
 ## Risks / TODOs
-- Evitar logica API directa cuando exista `features/**/api.js`.
+- Evitar logica API directa cuando exista `features/**/api.ts`.
 - Mantener estados de error/red claros.
-
+- Mantener headers nativos ocultos; la navegacion visible vive dentro de cada pantalla.

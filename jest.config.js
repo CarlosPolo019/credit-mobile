@@ -3,6 +3,8 @@ module.exports = {
   watchman: false,
   moduleNameMapper: {
     '^@env$': '<rootDir>/__mocks__/env.js',
+    '^@/(.*)$': '<rootDir>/src/$1',
+    '\\.(css)$': '<rootDir>/__mocks__/styleMock.js',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
   testPathIgnorePatterns: ['/node_modules/', '/android/'],

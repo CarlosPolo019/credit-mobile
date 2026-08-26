@@ -16,3 +16,4 @@ android/app/release.keystore
 android/app/*.jks
 android/local.properties
 src/shared/config/generated.env.js
+src/shared/config/generated.env.ts

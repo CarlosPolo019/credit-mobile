@@ -1,9 +1,26 @@
-export function normalizeText(value) {
+import type { CreditDirection, CreditPayload, CreditSortBy } from "./types";
+
+export type CreditFormValues = {
+  clientName: string;
+  clientDocument: string;
+  amount: string;
+  interestRate: string;
+  termMonths: string;
+  salespersonName: string;
+};
+
+export type CreditValidationResult = {
+  isValid: boolean;
+  errors: Partial<Record<keyof CreditFormValues, string>>;
+  value: CreditPayload;
+};
+
+export function normalizeText(value: unknown) {
   return String(value ?? "").trim().replace(/\s+/g, " ");
 }
 
-export function validateCredit(values) {
-  const errors = {};
+export function validateCredit(values: CreditFormValues): CreditValidationResult {
+  const errors: Partial<Record<keyof CreditFormValues, string>> = {};
   const clientName = normalizeText(values.clientName);
   const clientDocument = normalizeText(values.clientDocument);
   const salespersonName = normalizeText(values.salespersonName);
@@ -28,10 +45,10 @@ export function validateCredit(values) {
   };
 }
 
-export function normalizeSort(value) {
+export function normalizeSort(value: string): CreditSortBy {
   return value === "amount" ? "amount" : "createdAt";
 }
 
-export function normalizeDirection(value) {
+export function normalizeDirection(value: string): CreditDirection {
   return value === "asc" ? "asc" : "desc";
 }
