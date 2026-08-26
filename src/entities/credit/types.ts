@@ -1,10 +1,16 @@
 export type Credit = {
   id: string;
+  clientFirstName?: string;
+  clientSecondName?: string;
+  clientFirstSurname?: string;
+  clientSecondSurname?: string;
   clientName: string;
   clientDocument: string;
   amount: number | string;
   interestRate: number | string;
   termMonths: number;
+  registeredByUserId?: string;
+  salespersonDocument?: string;
   salespersonName: string;
   createdAt?: string;
 };
@@ -21,12 +27,14 @@ export type CreditFilters = {
 };
 
 export type CreditPayload = {
-  clientName: string;
+  clientFirstName: string;
+  clientSecondName: string;
+  clientFirstSurname: string;
+  clientSecondSurname: string;
   clientDocument: string;
   amount: number;
   interestRate: number;
   termMonths: number;
-  salespersonName: string;
 };
 
 export type CreditListResponse = {

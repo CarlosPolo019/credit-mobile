@@ -1,12 +1,14 @@
 import type { CreditDirection, CreditPayload, CreditSortBy } from "./types";
 
 export type CreditFormValues = {
-  clientName: string;
+  clientFirstName: string;
+  clientSecondName: string;
+  clientFirstSurname: string;
+  clientSecondSurname: string;
   clientDocument: string;
   amount: string;
   interestRate: string;
   termMonths: string;
-  salespersonName: string;
 };
 
 export type CreditValidationResult = {
@@ -21,19 +23,24 @@ export function normalizeText(value: unknown) {
 
 export function validateCredit(values: CreditFormValues): CreditValidationResult {
   const errors: Partial<Record<keyof CreditFormValues, string>> = {};
-  const clientName = normalizeText(values.clientName);
+  const clientFirstName = normalizeText(values.clientFirstName);
+  const clientSecondName = normalizeText(values.clientSecondName);
+  const clientFirstSurname = normalizeText(values.clientFirstSurname);
+  const clientSecondSurname = normalizeText(values.clientSecondSurname);
   const clientDocument = normalizeText(values.clientDocument);
-  const salespersonName = normalizeText(values.salespersonName);
   const amount = Number(values.amount);
   const interestRate = Number(values.interestRate);
   const termMonths = Number(values.termMonths);
 
-  if (!clientName) errors.clientName = "El nombre del cliente es obligatorio.";
-  if (clientName.length > 120) errors.clientName = "Máximo 120 caracteres.";
+  if (!clientFirstName) errors.clientFirstName = "El primer nombre es obligatorio.";
+  if (clientFirstName.length > 60) errors.clientFirstName = "Máximo 60 caracteres.";
+  if (clientSecondName.length > 60) errors.clientSecondName = "Máximo 60 caracteres.";
+  if (!clientFirstSurname) errors.clientFirstSurname = "El primer apellido es obligatorio.";
+  if (clientFirstSurname.length > 60) errors.clientFirstSurname = "Máximo 60 caracteres.";
+  if (clientSecondSurname.length > 60) errors.clientSecondSurname = "Máximo 60 caracteres.";
   if (!clientDocument) errors.clientDocument = "La cédula o ID es obligatoria.";
-  if (clientDocument.length > 40) errors.clientDocument = "Máximo 40 caracteres.";
-  if (!salespersonName) errors.salespersonName = "El comercial es obligatorio.";
-  if (salespersonName.length > 120) errors.salespersonName = "Máximo 120 caracteres.";
+  if (!/^\d+$/.test(clientDocument)) errors.clientDocument = "La cédula o ID debe ser numérica.";
+  if (clientDocument.length > 20) errors.clientDocument = "Máximo 20 caracteres.";
   if (!Number.isFinite(amount) || amount <= 0) errors.amount = "El valor debe ser mayor que cero.";
   if (!Number.isFinite(interestRate) || interestRate < 0) errors.interestRate = "La tasa no puede ser negativa.";
   if (!Number.isInteger(termMonths) || termMonths <= 0) errors.termMonths = "El plazo debe ser mayor que cero.";
@@ -41,7 +48,16 @@ export function validateCredit(values: CreditFormValues): CreditValidationResult
   return {
     isValid: Object.keys(errors).length === 0,
     errors,
-    value: { clientName, clientDocument, amount, interestRate, termMonths, salespersonName },
+    value: {
+      clientFirstName,
+      clientSecondName,
+      clientFirstSurname,
+      clientSecondSurname,
+      clientDocument,
+      amount,
+      interestRate,
+      termMonths,
+    },
   };
 }
 

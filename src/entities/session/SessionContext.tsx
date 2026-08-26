@@ -9,7 +9,7 @@ type SessionContextValue = {
   session: Session | null;
   isRestoring: boolean;
   isAuthenticated: boolean;
-  login: (document: string, password: string) => Promise<void>;
+  login: (username: string, password: string) => Promise<void>;
   register: (fullName: string, document: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -57,8 +57,8 @@ export function SessionProvider({ children }: SessionProviderProps) {
     setSession(nextSession);
   }, []);
 
-  const login = useCallback(async (document: string, password: string) => {
-    const response = await loginRequest(document, password);
+  const login = useCallback(async (username: string, password: string) => {
+    const response = await loginRequest(username, password);
     await persistSession(response);
   }, [persistSession]);
 

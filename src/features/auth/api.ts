@@ -1,12 +1,25 @@
 import type { Session } from "@/entities/session/types";
 import { api } from "@/shared/api/client";
 
+export type LoginPayload = {
+  username: string;
+  password: string;
+};
+
+export type RegisterPayload = {
+  fullName: string;
+  document: string;
+  password: string;
+};
+
 export async function loginRequest(username: string, password: string) {
-  const response = await api.post("/api/v1/auth/login", { username, password });
+  const payload: LoginPayload = { username, password };
+  const response = await api.post("/api/v1/auth/login", payload);
   return response.data as Session;
 }
 
 export async function registerRequest(fullName: string, document: string, password: string) {
-  const response = await api.post("/api/v1/auth/register", { fullName, document, password });
+  const payload: RegisterPayload = { fullName, document, password };
+  const response = await api.post("/api/v1/auth/register", payload);
   return response.data as Session;
 }

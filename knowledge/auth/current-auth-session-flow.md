@@ -4,7 +4,7 @@
 - `active`
 
 ## Proposito
-- Registrar o autenticar por cedula y conservar la sesion JWT en Keychain.
+- Registrar por cedula o autenticar por `username` del backend y conservar la sesion JWT en Keychain.
 
 ## Participantes
 - `pages/login/LoginPage.tsx`
@@ -22,15 +22,17 @@ sequenceDiagram
   participant Session
   participant API
   participant Keychain
-  User->>Login: Submit cedula/password
-  Login->>Session: login(document,password)
-  Session->>API: POST /api/v1/auth/login
+  User->>Login: Submit username/password
+  Login->>Session: login(username,password)
+  Session->>API: POST /api/v1/auth/login {username,password}
   API-->>Session: JWT
   Session->>Keychain: Persist session
   Session-->>User: Authenticated stack
 ```
 
-Registro usa `POST /api/v1/auth/register` con `fullName`, `document` y `password`, y persiste la misma respuesta de sesion.
+Login usa el campo backend `username`. Para usuarios registrados ese valor es la cedula normalizada; para compatibilidad tambien puede ser el usuario demo configurado por ambiente.
+
+Registro usa `POST /api/v1/auth/register` con `fullName`, `document` y `password`, y persiste la misma respuesta de sesion. En registro, `document` debe ser numerico.
 
 ## Errores
 - Credenciales invalidas: mostrar banner y no guardar sesion.
@@ -39,4 +41,4 @@ Registro usa `POST /api/v1/auth/register` con `fullName`, `document` y `password
 
 ## Validacion
 - `npm test`
-- Prueba manual: registrar cedula, cerrar app, abrir app y verificar restauracion; luego logout/login con la misma cedula.
+- Prueba manual: registrar cedula, cerrar app, abrir app y verificar restauracion; luego logout/login con la misma cedula o con el usuario demo.
