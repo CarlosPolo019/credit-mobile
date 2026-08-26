@@ -3,27 +3,33 @@ import { validateCredit } from "@/entities/credit/validation";
 describe("validateCredit", () => {
   it("normalizes valid input", () => {
     const result = validateCredit({
-      clientName: " Pepito  Perez ",
-      clientDocument: " SEED-001 ",
+      clientFirstName: " Pepito ",
+      clientSecondName: "",
+      clientFirstSurname: " Perez ",
+      clientSecondSurname: "",
+      clientDocument: " 100000001 ",
       amount: "7800000",
       interestRate: "2",
       termMonths: "10",
-      salespersonName: " Comercial Seed ",
     });
 
     expect(result.isValid).toBe(true);
-    expect(result.value.clientName).toBe("Pepito Perez");
+    expect(result.value.clientFirstName).toBe("Pepito");
+    expect(result.value.clientFirstSurname).toBe("Perez");
+    expect(result.value.clientDocument).toBe("100000001");
     expect(result.value.termMonths).toBe(10);
   });
 
   it("rejects invalid numbers", () => {
     const result = validateCredit({
-      clientName: "",
+      clientFirstName: "",
+      clientSecondName: "",
+      clientFirstSurname: "",
+      clientSecondSurname: "",
       clientDocument: "",
       amount: "0",
       interestRate: "-1",
       termMonths: "0",
-      salespersonName: "",
     });
 
     expect(result.isValid).toBe(false);

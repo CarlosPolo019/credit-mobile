@@ -8,24 +8,33 @@
 
 ## Participantes
 - `pages/credit-create/CreditCreatePage.tsx`
+- `pages/credit-create/CreditConfirmSheetContent.tsx`
 - `entities/credit/validation.ts`
+- `entities/credit/payment.ts`
 - `features/credits/api.ts`
 - `shared/api/client.ts`
+- `shared/ui/BottomSheetModal.tsx`
 
 ## Flujo
 ```mermaid
 sequenceDiagram
   participant User
   participant Page
+  participant ConfirmSheet
   participant Feature
   participant Backend
-  User->>Page: Fill credit form
+  User->>Page: Fill credit form (cedula primero, sin campo Comercial)
   Page->>Page: Validate input
-  Page->>Feature: createCredit(payload)
+  Page->>ConfirmSheet: present() con el payload validado
+  ConfirmSheet->>ConfirmSheet: estimateCreditPayment (cuota/total estimados)
+  User->>ConfirmSheet: Confirmar y registrar
+  ConfirmSheet->>Feature: createCredit(payload)
   Feature->>Backend: POST /api/v1/credits
   Backend-->>Feature: CreditResponse
-  Feature-->>Page: Success
+  Feature-->>Page: Success (sheet se cierra, formulario se limpia)
 ```
+
+El paso de confirmacion es igual al de `credit-web` (`CreditConfirmDialog.jsx`): el Comercial se muestra ahi (trazabilidad), no en el formulario, porque ya viene de la sesion. Si `createCredit` falla, el sheet se cierra y el error se muestra en el `Banner` de la pagina.
 
 ## Errores
 - Validacion local: mostrar mensajes antes de llamar API.
