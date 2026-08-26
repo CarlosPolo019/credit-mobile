@@ -46,6 +46,21 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
   const [credits, setCredits] = useState<Credit[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [salespersonOptions, setSalespersonOptions] = useState<string[]>([]);
+
+  useEffect(() => {
+    // One-time, unfiltered fetch just to know which comerciales exist, so
+    // the filter sheet can offer a select instead of free text. Independent
+    // of `credits` (which is scoped by the active filters) to avoid the
+    // option list shrinking to just whichever salesperson is selected.
+    listCredits(defaultFilters)
+      .then((response) => {
+        const names = Array.from(new Set((response.items ?? []).map((credit) => credit.salespersonName).filter(Boolean)));
+        names.sort((a, b) => a.localeCompare(b));
+        setSalespersonOptions(names);
+      })
+      .catch(() => setSalespersonOptions([]));
+  }, []);
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -144,7 +159,12 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
       )}
 
       <BottomSheetModal ref={filtersSheetRef}>
-        <CreditFiltersSheetContent filters={filters} onApply={applyFilters} onClose={() => filtersSheetRef.current?.dismiss()} />
+        <CreditFiltersSheetContent
+          filters={filters}
+          salespersonOptions={salespersonOptions}
+          onApply={applyFilters}
+          onClose={() => filtersSheetRef.current?.dismiss()}
+        />
       </BottomSheetModal>
     </View>
   );

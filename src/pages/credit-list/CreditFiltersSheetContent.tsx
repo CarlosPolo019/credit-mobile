@@ -6,6 +6,7 @@ import { Button, TextField, colors } from "@/shared/ui";
 
 type CreditFiltersSheetContentProps = {
   filters: CreditFilters;
+  salespersonOptions: string[];
   onApply: (filters: CreditFilters) => void;
   onClose: () => void;
 };
@@ -20,7 +21,7 @@ const directionOptions: { label: string; value: CreditDirection }[] = [
   { label: "Asc", value: "asc" },
 ];
 
-export function CreditFiltersSheetContent({ filters, onApply, onClose }: CreditFiltersSheetContentProps) {
+export function CreditFiltersSheetContent({ filters, salespersonOptions, onApply, onClose }: CreditFiltersSheetContentProps) {
   const isDarkMode = useColorScheme() === "dark";
   const [draft, setDraft] = useState(filters);
 
@@ -31,6 +32,8 @@ export function CreditFiltersSheetContent({ filters, onApply, onClose }: CreditF
   const setValue = <TKey extends keyof CreditFilters>(key: TKey, value: CreditFilters[TKey]) => {
     setDraft((previous) => ({ ...previous, [key]: value }));
   };
+
+  const salespersonSelectOptions = [{ label: "Todos", value: "" }, ...salespersonOptions.map((name) => ({ label: name, value: name }))];
 
   return (
     <View className="flex-1 bg-white px-6 dark:bg-neutral-950">
@@ -48,7 +51,7 @@ export function CreditFiltersSheetContent({ filters, onApply, onClose }: CreditF
           onChangeText={(value) => setValue("clientDocument", value)}
           keyboardType="number-pad"
         />
-        <TextField label="Comercial" value={draft.salesperson} onChangeText={(value) => setValue("salesperson", value)} />
+        <FilterSection title="Comercial" options={salespersonSelectOptions} selectedValue={draft.salesperson} onSelect={(value) => setValue("salesperson", value)} wrap />
         <FilterSection title="Ordenar por" options={sortOptions} selectedValue={draft.sortBy} onSelect={(value) => setValue("sortBy", value)} />
         <FilterSection title="Dirección" options={directionOptions} selectedValue={draft.direction} onSelect={(value) => setValue("direction", value)} />
       </View>
@@ -75,19 +78,20 @@ type FilterSectionProps<TValue extends string> = {
   options: FilterOption<TValue>[];
   selectedValue: TValue;
   onSelect: (value: TValue) => void;
+  wrap?: boolean;
 };
 
-function FilterSection<TValue extends string>({ title, options, selectedValue, onSelect }: FilterSectionProps<TValue>) {
+function FilterSection<TValue extends string>({ title, options, selectedValue, onSelect, wrap = false }: FilterSectionProps<TValue>) {
   return (
     <View className="gap-2">
       <Text className="text-gray-500 dark:text-neutral-400">{title}</Text>
-      <View className="flex-row gap-3">
+      <View className={wrap ? "flex-row flex-wrap gap-2" : "flex-row gap-3"}>
         {options.map((option) => (
           <TouchableOpacity
             key={option.value}
             onPress={() => onSelect(option.value)}
             activeOpacity={0.6}
-            className={`flex-1 items-center justify-center rounded-lg py-3 ${
+            className={`items-center justify-center rounded-lg px-4 py-3 ${wrap ? "" : "flex-1"} ${
               selectedValue === option.value ? "" : "border border-gray-200 bg-white dark:border-neutral-800 dark:bg-neutral-900"
             }`}
             style={selectedValue === option.value ? { backgroundColor: colors.brand100 } : undefined}
