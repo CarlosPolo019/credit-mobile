@@ -97,8 +97,8 @@ http://10.0.2.2:8080
 For release builds, set `CREDIT_API_BASE_URL` before running the build command:
 
 ```bash
-CREDIT_API_BASE_URL=https://your-render-backend.example.com npm run build:apk
-CREDIT_API_BASE_URL=https://your-render-backend.example.com npm run build:aab
+CREDIT_API_BASE_URL=https://fyatest-api.cmescorcia.com npm run build:apk
+CREDIT_API_BASE_URL=https://fyatest-api.cmescorcia.com npm run build:aab
 ```
 
 The npm lifecycle writes `src/shared/config/generated.env.ts` before Android build/start commands — it's generated and gitignored; change `CREDIT_API_BASE_URL`, not that file.
