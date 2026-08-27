@@ -31,7 +31,7 @@ sequenceDiagram
 
 Login usa el campo backend `username`. Para usuarios registrados ese valor es la cedula normalizada; para compatibilidad tambien puede ser el usuario demo configurado por ambiente.
 
-Sin auto-registro en mobile: las cuentas se crean solo desde `credit-web` (`/users`, admin-only, `POST /api/v1/users`). El backend sigue exponiendo `POST /api/v1/auth/register` (publico, siempre `role: "USER"`), pero ningun cliente mobile lo llama — `pages/register/RegisterPage.tsx` existio en una version anterior y se elimino para mantener la creacion de cuentas centralizada en el administrador.
+Sin auto-registro en mobile: las cuentas se crean solo desde `credit-web` (`/users`, admin-only, `POST /api/v1/users`). El backend ya ni siquiera expone `POST /api/v1/auth/register` — se elimino del todo (controller, service y DTO) porque nadie lo llamaba: `pages/register/RegisterPage.tsx` existio en mobile en una version anterior y se elimino primero, para mantener la creacion de cuentas centralizada en el administrador; una vez confirmado que ningun cliente lo usaba, el endpoint publico tambien se elimino del backend.
 
 ## Errores
 - Credenciales invalidas: mostrar banner y no guardar sesion.

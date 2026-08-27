@@ -14,8 +14,10 @@ Guia operativa para agentes que trabajen en `credit-mobile`.
 - Android: solo permiso `INTERNET`; release APK/AAB por Gradle.
 - Creditos: crear, listar, ver detalle, editar, eliminar, exportar a PDF (generado en `credit-backend`, no en el dispositivo) e historial de auditoria — ver `knowledge/credits/current-credit-detail-flow.md`.
 - Cliente por cedula: al crear (no al editar), la cedula tiene autocomplete contra `GET /api/v1/clients` (mismo dato que `credit-web`); si matchea, el nombre se autocompleta y los campos quedan solo lectura, evitando nombres inconsistentes para la misma cedula.
-- Clientes y Correos: pantallas nuevas (`pages/client-list`, `pages/email-job-list`), accesibles desde `HomePage` solo si `session.user.role === "ADMIN"` (hoy, unicamente Carlos Escorcia); si se navega igual sin el rol, redirigen a `Home`. `/api/v1/email-jobs` ademas lo exige el backend (403 para `USER`); `/api/v1/clients` no tiene esa restriccion en el backend (lo usa el autocomplete, abierto a todos), solo la pantalla es de admin. Ambas listas paginan en el cliente, 6 por pagina.
-- Dashboard: pantalla nueva (`pages/dashboard`), mismo criterio de acceso (`ADMIN`, redirige a `Home` si no); sin endpoint propio, agrega en el cliente los mismos datos de `listCredits`/`listEmailJobs` (creditos por comercial, monto total, ganancia estimada, tasa promedio, correos por estado) — equivalente movil del "Dashboard" de `credit-web`.
+- Navegacion: `src/app/navigation.ts` define `TabParamList`/`RootStackParamList`/`TabScreenProps` (fuente unica de tipos, para que `AppRouter.tsx` y `MainTabs.tsx` no se importen tipos entre si aunque si importan sus componentes). El stack autenticado (`AppRouter.tsx`) tiene una sola pantalla de primer nivel, `MainTabs` (`src/app/MainTabs.tsx`, un `Tab.Navigator` con tabBar 100% custom, `src/app/FloatingTabBar.tsx` — un pill flotante, no la barra nativa) mas `CreditDetail`/`CreditEdit`/`ClientList`/`Dashboard`, que se empujan encima de los tabs (pierden la barra flotante mientras estan abiertos, es el comportamiento esperado de un stack push). Dentro de `MainTabs`: `ADMIN` ve 5 tabs (Home, Créditos, Registrar — boton central elevado, ver "Registrar…" en `FloatingTabBar.tsx` — Correos, Perfil); un `USER` ve solo 3 (Créditos, Registrar, Perfil) — sin Home (solo tenia accesos de admin) ni Correos. `initialRouteName` del `Tab.Navigator` cambia segun el rol (`"Home"` vs `"CreditList"`).
+- Clientes y Dashboard: pantallas admin-only sin tab propio (`pages/client-list`, `pages/dashboard`), accesibles solo desde los accesos rapidos de `HomePage` (que a su vez solo existe/se ve para `ADMIN`, ver punto anterior); si se navega igual sin el rol, redirigen (`goBack()`). `/api/v1/clients` no exige rol en el backend (lo usa el autocomplete, abierto a todos), solo la pantalla es de admin.
+- Correos: a diferencia de Clientes/Dashboard, es un tab propio (5to, solo `ADMIN`, ver punto de Navegacion) en vez de un acceso rapido desde Home — `pages/email-job-list`. El guard de rol redirige a `navigation.navigate("Home")` en vez de `goBack()` porque, al ser un tab, no tiene una pantalla "anterior" de la que volver. `/api/v1/email-jobs` ademas lo exige el backend (403 para `USER`). Pagina en el cliente, 6 por pagina.
+- Dashboard: sin endpoint propio, agrega en el cliente los mismos datos de `listCredits`/`listEmailJobs` (creditos por comercial, monto total, ganancia estimada, tasa promedio, correos por estado) — equivalente movil del "Dashboard" de `credit-web`.
 - Splash: `src/app/Splash.tsx` (branded, `Animated` de RN, sin libreria nativa nueva) + `android/.../drawable/splash_background.xml` para el arranque en frio.
 - Offline: `NetworkStatusProvider`/`OfflineBanner` (via `@react-native-community/netinfo`) detectan conectividad global; solo la creacion de creditos funciona sin internet, encolando en `AsyncStorage` (`features/credits/offlineQueue.ts`) y sincronizando al volver la conexion (`features/credits/offlineSync.ts`) — ver `knowledge/credits/current-credit-offline-queue-flow.md`.
 - Cold start del backend: `src/app/BackendWakeGate.tsx` hace polling a `/actuator/health` (Render free tier duerme tras inactividad) y muestra mensajes de espera antes de dejar entrar a `AppRouter`. No hay job externo/CI manteniendo el backend despierto (se probo y no era confiable, ver `credit-backend/docs/deployment.md`).
@@ -74,6 +76,7 @@ Tres errores ya vividos en este repo al instalar un build debug en un telefono r
    ```bash
    CREDIT_API_BASE_URL=https://fyatest-api.cmescorcia.com npm run android
    ```
+   O usar directamente `npm run android:device` (mismo efecto, URL de produccion ya hardcodeada en `package.json` para no tener que escribirla/recordarla cada vez). Equivalente para levantar Metro solo: `npm run start:device`.
 2. **`npm run android` corrido desde un shell no interactivo (por ejemplo, el Bash de un agente) no deja el bundler Metro corriendo.** `react-native run-android` normalmente abre una terminal nueva para Metro; sin terminal interactiva ese paso no pasa, el APK se instala bien pero al abrir la app da **"Unable to load script"** (no hay nada escuchando en `:8081`).
 3. **Arrancar Metro con `npx react-native start` directo (en vez de `npm start`) salta el hook `prestart` (`node scripts/write-mobile-config.js`), asi que `generated.env.ts` se queda con la URL vieja/default aunque le pases `CREDIT_API_BASE_URL` a ese comando.** Esto paso en la practica: la app quedaba pegada en la pantalla de "despertando el servidor" para siempre porque seguia pegandole a `10.0.2.2:8080` desde el dispositivo real (punto 1), aunque el build original se habia hecho con la URL correcta — el Metro levantado a mano no la tenia. Antes de levantar Metro asi, regenerar el archivo a mano con la misma variable:
    ```bash
@@ -95,10 +98,10 @@ Un solo `AGENTS.md` en todo el repo (este archivo). Cada capa y slice de `src/` 
 | `src/app` (navegacion, sesion global) | `src/app/README.md` |
 | `src/pages` (capa de pantallas) | `src/pages/README.md` |
 | `src/pages/login` | `src/pages/login/README.md` |
-| `src/pages/register` | `src/pages/register/README.md` |
-| `src/pages/home` | `src/pages/home/README.md` |
-| `src/pages/credit-create` (formulario + confirmacion) | `src/pages/credit-create/README.md` |
-| `src/pages/credit-list` (consulta + filtros) | `src/pages/credit-list/README.md` |
+| `src/pages/home` (landing tab, admin-only quick links) | `src/pages/home/README.md` |
+| `src/pages/profile` (tab, antes bottom sheet) | `src/pages/profile/README.md` |
+| `src/pages/credit-create` (formulario + confirmacion, tab "Registrar") | `src/pages/credit-create/README.md` |
+| `src/pages/credit-list` (consulta + filtros, tab "Créditos") | `src/pages/credit-list/README.md` |
 | `src/pages/credit-detail` (detalle, editar, eliminar, auditoria, PDF) | `src/pages/credit-detail/README.md` |
 | `src/pages/client-list` (directorio de clientes, solo `ADMIN`) | `src/pages/client-list/README.md` |
 | `src/pages/email-job-list` (estado de correos, solo `ADMIN`) | `src/pages/email-job-list/README.md` |

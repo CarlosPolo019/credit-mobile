@@ -1,11 +1,11 @@
 # Email Job List Page
 
 ## Purpose
-- Ver el estado de las notificaciones de crédito (`PENDING`, `PROCESSING`, `SENT`, `RETRY`, `FAILED`) y el último error cuando falla un envío.
+- Tab "Correos" (5to tab, solo `ADMIN`, ver `app/MainTabs.tsx`): ver el estado de las notificaciones de crédito (`PENDING`, `PROCESSING`, `SENT`, `RETRY`, `FAILED`) y el último error cuando falla un envío.
 - Filtrar por estado (chips) y por texto libre (cliente o destinatario).
 
 ## Acceso
-- Solo `session.user.role === "ADMIN"` (hoy, únicamente Carlos Escorcia). No aparece en `HomePage` para otras cuentas; si de todos modos se navega ahí, redirige a `Home`.
+- Solo `session.user.role === "ADMIN"` (hoy, únicamente Carlos Escorcia): `MainTabs.tsx` ni siquiera monta este `Tab.Screen` para otra cuenta, así que en la práctica no hay forma de llegar acá sin el rol — a diferencia de Clientes/Dashboard (accesos desde Home, sin tab propio), este SÍ es un tab, no una pantalla empujada. El guard interno (`if (!isAdmin) navigation.navigate("Home")`) es una segunda línea de defensa por si el rol cambiara con el componente ya montado.
 - El backend también lo exige: `GET /api/v1/email-jobs` requiere `ROLE_ADMIN` (`SecurityConfig`) — un token `USER` recibe `403` aunque llegue a esta pantalla, igual que `credit-web`.
 
 ## Key Files -> Role

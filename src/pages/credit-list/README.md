@@ -1,10 +1,10 @@
 # Credit List Page
 
 ## Purpose
-- Consultar creditos activos con filtros y ordenamiento.
+- Tab "Créditos": consultar creditos activos con filtros y ordenamiento.
 
 ## Key Files -> Role
-- `CreditListPage.tsx`: filtros, sort, loading, empty, errores; toca una fila para ir a `CreditDetail`. Pagina en el cliente (6 por pagina, `SectionList` no crece infinito) — cambiar de filtro/orden vuelve a la pagina 1.
+- `CreditListPage.tsx`: filtros, sort, loading, empty, errores; toca una fila para ir a `CreditDetail` (pantalla empujada encima de los tabs, fuera de `MainTabs`). Pagina en el cliente (6 por pagina, `SectionList` no crece infinito) — cambiar de filtro/orden vuelve a la pagina 1. Al ser un tab, no tiene boton de "volver"; el bottom padding extra (`styles.listContent`/`pb-24` en el pie de paginacion) evita que el `FloatingTabBar` flotante tape la ultima fila o los controles de paginacion.
 - `CreditFiltersSheetContent.tsx`: contenido del bottom sheet de filtros. "Comercial" es un select de chips (no texto libre), con las opciones armadas a partir de los `salespersonName` distintos de un fetch inicial sin filtrar.
 
 ## External Deps

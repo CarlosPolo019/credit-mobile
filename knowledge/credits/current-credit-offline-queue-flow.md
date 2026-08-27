@@ -4,7 +4,7 @@
 - `active`
 
 ## Proposito
-- Permitir registrar creditos sin internet, guardandolos en una cola local y sincronizandolos al volver la conexion. Editar, eliminar, exportar a PDF, login y registro siguen requiriendo internet.
+- Permitir registrar creditos sin internet, guardandolos en una cola local y sincronizandolos al volver la conexion. Editar, eliminar, ver PDF y login siguen requiriendo internet (no hay pantalla de registro — ver `knowledge/auth/current-auth-session-flow.md`).
 
 ## Participantes
 - `shared/network/NetworkStatusContext.tsx` (`NetworkStatusProvider`/`useNetworkStatus`, montado en `src/app/App.tsx`)
@@ -13,7 +13,8 @@
 - `pages/credit-create/CreditCreatePage.tsx`, `CreditForm.tsx`, `CreditConfirmSheetContent.tsx`
 - `features/credits/offlineQueue.ts` (cola en `AsyncStorage`)
 - `features/credits/offlineSync.ts` (`syncQueuedCredits`)
-- `pages/home/HomePage.tsx`, `ProfileSheetContent.tsx` (disparan y muestran el estado de la sincronizacion)
+- `app/AppRouter.tsx` (`AutoSyncOnReconnect`, dispara la sincronizacion automatica — vive aca, no en una pantalla, para que corra sin importar que tab tenga abierto el usuario)
+- `pages/profile/ProfilePage.tsx` (tab "Perfil": muestra el conteo pendiente/fallido y el boton "Sincronizar" manual — reemplazo al bottom sheet `ProfileSheetContent` que abria el avatar de `HomePage`)
 
 ## Flujo
 ```mermaid
@@ -22,7 +23,8 @@ sequenceDiagram
   participant Form as CreditForm
   participant Page as CreditCreatePage
   participant Queue as offlineQueue (AsyncStorage)
-  participant Home as HomePage/ProfileSheet
+  participant AutoSync as AutoSyncOnReconnect (AppRouter)
+  participant Profile as ProfilePage
   participant Sync as offlineSync
   participant Backend
 
@@ -34,8 +36,8 @@ sequenceDiagram
   Page-->>User: "Crédito guardado offline. Se sincronizará cuando vuelva internet."
 
   Note over User,Backend: Vuelve la conexion
-  Home->>Home: useNetworkStatus() -> isOnline = true
-  Home->>Sync: syncQueuedCredits()
+  AutoSync->>AutoSync: useNetworkStatus() -> isOnline = true
+  AutoSync->>Sync: syncQueuedCredits()
   Sync->>Queue: listQueuedCredits()
   loop cada item
     Sync->>Queue: markQueuedCreditSyncing(id)
@@ -47,8 +49,8 @@ sequenceDiagram
       Sync->>Queue: markQueuedCreditFailed(id, mensaje)
     end
   end
-  Home->>Queue: countPendingAndFailed()
-  Home-->>User: contador actualizado (avatar sin punto rojo si quedo en 0)
+  Profile->>Queue: countPendingAndFailed() (al ganar foco el tab)
+  Profile-->>User: contador actualizado
 ```
 
 ## Deteccion de conectividad
@@ -61,15 +63,15 @@ sequenceDiagram
 - No hay idempotencia remota: si `removeQueuedCredit` fallara justo despues de un `createCredit` exitoso, un reintento manual duplicaria el credito en el backend. Riesgo aceptado en esta version (ver Assumptions del plan original).
 
 ## Sincronizacion
-- Automatica: `HomePage` corre `syncQueuedCredits()` cada vez que `isOnline` pasa a `true`.
-- Manual: boton "Sincronizar" en `ProfileSheetContent` (deshabilitado si no hay items pendientes/fallidos, oculto si no hay internet).
+- Automatica: `AutoSyncOnReconnect` (`app/AppRouter.tsx`) corre `syncQueuedCredits()` cada vez que `isOnline` pasa a `true` — headless, no una pantalla, montado siempre que hay sesion (no depende de que tab este abierto).
+- Manual: boton "Sincronizar" en `pages/profile/ProfilePage.tsx` (deshabilitado si no hay items pendientes/fallidos, oculto si no hay internet).
 - Items `failed` se reintentan en la siguiente sincronizacion (automatica o manual) igual que los `pending`.
 - Un credito sincronizado no aparece en `CreditList` hasta que la sincronizacion termina (no hay estado "optimista" en la lista).
 
 ## Alcance
-- Solo creacion de creditos funciona offline. Editar (`CreditForm` en modo `edit`), eliminar, exportar PDF, login y registro siempre requieren internet — si fallan sin conexion, `shared/api/client.ts` devuelve "Sin conexión. Revisa internet e intenta de nuevo." y la pantalla lo muestra como cualquier otro error.
+- Solo creacion de creditos funciona offline. Editar (`CreditForm` en modo `edit`), eliminar, ver PDF y login siempre requieren internet — si fallan sin conexion, `shared/api/client.ts` devuelve "Sin conexión. Revisa internet e intenta de nuevo." y la pantalla lo muestra como cualquier otro error.
 - No se toco el backend: `POST /api/v1/credits` es el mismo endpoint que usa la creacion online.
-- `src/app/BackendWakeGate.tsx` (cold start de Render) solo envuelve el stack **no autenticado**: una sesion ya iniciada nunca queda bloqueada esperando al backend, precisamente para que la cola offline pueda usarse mientras el backend esta dormido/arrancando, no solo cuando el dispositivo esta sin señal. Login/Register si esperan, porque no tienen modo offline.
+- `src/app/BackendWakeGate.tsx` (cold start de Render) solo envuelve el stack **no autenticado**: una sesion ya iniciada nunca queda bloqueada esperando al backend, precisamente para que la cola offline pueda usarse mientras el backend esta dormido/arrancando, no solo cuando el dispositivo esta sin señal. Login si espera, porque no tiene modo offline.
 
 ## Errores
 - Sin conexion al llamar cualquier endpoint: `shared/api/client.ts` devuelve "Sin conexión. Revisa internet e intenta de nuevo." (en vez del mensaje generico).
@@ -79,4 +81,4 @@ sequenceDiagram
 - `npm run typecheck`
 - `npm run lint`
 - `npm test` (`__tests__/offlineQueue.test.ts`, `__tests__/apiClientOfflineError.test.ts`)
-- Prueba manual Android: apagar internet, crear un credito, ver el banner y el punto rojo en el avatar, reactivar internet, confirmar que se sincroniza solo y aparece en el listado/backend.
+- Prueba manual Android: apagar internet, crear un credito, ver el banner y el conteo pendiente en el tab Perfil, reactivar internet, confirmar que se sincroniza solo y aparece en el listado/backend.

@@ -1,18 +1,15 @@
 # Home Page
 
 ## Purpose
-- Pantalla inicial autenticada con accesos a registrar y consultar creditos, y el acceso al perfil del usuario.
+- Tab "Inicio" (solo `ADMIN`, ver `app/MainTabs.tsx`) con accesos rapidos a las dos pantallas admin-only que no tienen tab propio: Clientes y Dashboard.
 
 ## Key Files -> Role
-- `HomePage.tsx`: acciones de navegacion (`CreditCreate`, `CreditList`); el avatar en el header abre `ProfileSheetContent`. Sincroniza la cola offline automaticamente al recuperar internet (`useEffect` sobre `isOnline`) y al volver a foco (`navigation.addListener("focus", ...)`); un punto rojo en el avatar indica creditos pendientes/fallidos sin abrir el sheet. Si `session.user.role === "ADMIN"` (hoy, solo Carlos Escorcia), agrega tres accesos mas: `ClientList`, `EmailJobList` y `Dashboard` — ocultos para cualquier otra cuenta, mismo criterio que el sidebar de `credit-web`.
-- `ProfileSheetContent.tsx`: bottom sheet con info del usuario (nombre, cedula, imagen), estado de la cola offline + boton "Sincronizar" (solo con internet), y "Cerrar sesión".
+- `HomePage.tsx`: para `session.user.role === "ADMIN"` (hoy, solo Carlos Escorcia), lista `ActionRow`s a `ClientList` y `Dashboard`. Para cualquier otra cuenta este tab ni siquiera se monta (`MainTabs.tsx` omite el `Tab.Screen` "Home" condicionalmente), asi que el `else` de este componente (un texto invitando a usar las pestañas de abajo) en la practica nunca se ve — solo defiende contra el caso raro de que el rol cambie mientras el componente ya esta montado.
 
 ## External Deps
 - `entities/session/SessionContext.tsx`
-- `features/credits/offlineQueue.ts`, `features/credits/offlineSync.ts`
-- `shared/network/NetworkStatusContext.tsx`
-- `shared/ui` (`BottomSheetModal`)
 
 ## Risks / TODOs
-- Mantener comandos claros y sin llamadas API innecesarias.
-- El logout dentro del sheet lo cierra antes de invalidar la sesion (`profileSheetRef.current?.dismiss()` antes de `logout()`).
+- Mantener accesos claros y sin llamadas API innecesarias — esta pantalla no hace fetch de nada, solo navega.
+- No agregar de vuelta a Registrar/Consultar créditos ni a Correos como `ActionRow`: esos tres ya tienen su propio tab (`credit-create`, `credit-list`, `email-job-list`) — listarlos aca tambien seria una ruta duplicada y confusa.
+- El acceso al perfil del usuario (antes un bottom sheet que abria el avatar de esta pantalla) ahora es el tab "Perfil" — ver `pages/profile/README.md`.

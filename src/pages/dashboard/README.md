@@ -5,7 +5,7 @@
 - No hay un endpoint dedicado en el backend — todo se calcula en el cliente a partir de las mismas listas que ya usan `CreditListPage` y `EmailJobListPage`.
 
 ## Acceso
-- Solo `session.user.role === "ADMIN"` (hoy, únicamente Carlos Escorcia). No aparece en `HomePage` para otras cuentas; si de todos modos se navega ahí, redirige a `Home` (`navigation.replace`), mismo patrón que `ClientListPage`/`EmailJobListPage`.
+- Solo `session.user.role === "ADMIN"` (hoy, únicamente Carlos Escorcia). No aparece en `HomePage` para otras cuentas; si de todos modos se navega ahí, redirige hacia atrás (`navigation.goBack()`) — esta pantalla es siempre una pantalla empujada desde el tab Home, no un tab propio, así que "atrás" siempre existe. Mismo patrón que `ClientListPage`.
 - `GET /api/v1/email-jobs` lo exige también el backend (403 para `USER`); `GET /api/v1/credits` no tiene esa restricción (el permiso de admin es solo de esta pantalla, no del dato).
 
 ## Key Files -> Role

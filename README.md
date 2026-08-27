@@ -127,30 +127,42 @@ El lifecycle de npm escribe `src/shared/config/generated.env.ts` antes de los co
 - Login con `{ username, password }` + JWT (`username` puede ser la cédula o el usuario demo).
 - Registro de cuenta con documento numérico y contraseña.
 - Token guardado en Keychain.
-- Registrar crédito con un paso de confirmación (cuota mensual/total estimados) antes de enviar.
+- Navegación por pestañas flotantes (bottom tabs, `src/app/MainTabs.tsx` + `FloatingTabBar.tsx`, tabBar 100% custom, no la barra nativa): `ADMIN` ve 5 tabs (Home, Créditos, **Registrar** — botón central elevado, destacado sobre los demás —, Correos, Perfil); un `USER` normal ve solo 3 (Créditos, Registrar, Perfil), sin Home (que solo tenía accesos de admin) ni Correos.
+- Registrar crédito con un paso de confirmación (cuota mensual/total estimados) antes de enviar; límites de monto ($200.000.000 máx.), tasa (0.5%–3.5% mensual) y plazo (1–60 meses) validados en el formulario, con el mismo criterio que `credit-web` y el backend.
 - Consultar créditos activos: filtrar por cliente, documento, comercial (select); ordenar por fecha o monto; paginado (6 por página).
 - Cédula con autocomplete al registrar: si ya existe, el nombre se completa solo y queda de solo lectura.
-- Detalle de crédito: ver, editar, eliminar, historial de auditoría (quién cambió qué) y exportar como PDF generado en el servidor.
-- Creación de créditos offline: funciona sin internet guardando en cola local y sincronizando automáticamente (o manualmente, desde el sheet de perfil) al recuperar la conexión; editar/eliminar/PDF/login/registro siguen requiriendo internet.
-- Pantalla de "despertando el servidor": antes de Login/Register, si el backend (Render free tier) está dormido, la app hace polling a `/actuator/health` con mensajes de espera en vez de mostrar un error de conexión confuso. Con sesión ya iniciada no bloquea nada — la cola offline permite seguir registrando créditos sin esperar al backend.
-- Clientes y Correos: solo para `role: "ADMIN"` (hoy, Carlos Escorcia) — dos accesos extra en Home, paginados (6 por página). Correos también lo exige el backend (403 para cualquier otra cuenta); Clientes solo lo restringe la pantalla, el dato es el mismo que usa el autocomplete.
-- Dashboard: solo para `role: "ADMIN"` — resumen de créditos por comercial, monto total solicitado, ganancia estimada, tasa de interés promedio y correos por estado, calculado en el cliente a partir de los mismos datos de Créditos y Correos (sin endpoint propio).
+- Detalle de crédito: ver, editar, eliminar, historial de auditoría (quién cambió qué) y ver el PDF del crédito (generado en el servidor, se abre directo en el navegador del dispositivo).
+- Creación de créditos offline: funciona sin internet guardando en cola local y sincronizando automáticamente (o manualmente, desde el tab de Perfil) al recuperar la conexión; editar/eliminar/PDF/login siguen requiriendo internet.
+- Pantalla de "despertando el servidor": antes de Login, si el backend (Render free tier) está dormido, la app hace polling a `/actuator/health` con mensajes de espera en vez de mostrar un error de conexión confuso. Con sesión ya iniciada no bloquea nada — la cola offline permite seguir registrando créditos sin esperar al backend.
+- Sin auto-registro: las cuentas se crean solo desde `credit-web` (`/users`, admin-only) — no hay pantalla de registro público en la app.
+- Clientes y Dashboard: solo para `role: "ADMIN"` (hoy, Carlos Escorcia) — accesos extra en el tab Home (no tienen tab propio). Clientes paginado (6 por página); el dato es el mismo que usa el autocomplete, sin restricción de rol en el backend, solo la pantalla es de admin.
+- Correos: solo para `role: "ADMIN"` — a diferencia de Clientes/Dashboard, sí tiene su propio tab (el 5to). El backend también lo exige (403 para cualquier otra cuenta). Paginado (6 por página).
+- Dashboard: resumen de créditos por comercial, monto total solicitado, ganancia estimada, tasa de interés promedio y correos por estado, calculado en el cliente a partir de los mismos datos de Créditos y Correos (sin endpoint propio) — equivalente móvil del Dashboard de `credit-web`.
+- Modo oscuro: toda la UI (NativeWind `dark:` variants) sigue el tema del sistema operativo automáticamente, sin selector manual — colores de marca, tarjetas, texto y el tab bar flotante tienen su contraparte oscura.
 - Splash screen animado con marca e ícono de la app.
 - Manejo de sesión expirada.
 
 ## Capturas
 
-| Login | Home |
+| Login | Home (admin) |
 |---|---|
-| ![Login](docs/screenshots/login.png) | ![Home](docs/screenshots/home.png) |
+| ![Login](docs/screenshots/login.png) | ![Home admin](docs/screenshots/home-admin.png) |
+
+| Nav de 3 tabs (rol USER) | Registrar crédito |
+|---|---|
+| ![Nav rol USER](docs/screenshots/nav-user.png) | ![Registrar crédito](docs/screenshots/registrar-credito.png) |
 
 | Consultar créditos | Detalle de crédito |
 |---|---|
-| ![Consultar créditos](docs/screenshots/credit-list.png) | ![Detalle de crédito](docs/screenshots/credit-detail.png) |
+| ![Consultar créditos](docs/screenshots/creditos-lista.png) | ![Detalle de crédito](docs/screenshots/credito-detalle.png) |
 
-| Editar crédito | Eliminar (confirmación) |
+| Correos (admin) | Clientes (admin) |
 |---|---|
-| ![Editar crédito](docs/screenshots/credit-edit.png) | ![Confirmar eliminación](docs/screenshots/credit-delete-confirm.png) |
+| ![Correos](docs/screenshots/correos.png) | ![Clientes](docs/screenshots/clientes.png) |
+
+| Perfil | |
+|---|---|
+| ![Perfil](docs/screenshots/perfil.png) | |
 
 ## Compilar APK
 
