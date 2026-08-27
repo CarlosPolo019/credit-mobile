@@ -75,6 +75,7 @@ Un solo `AGENTS.md` en todo el repo (este archivo). Cada capa y slice de `src/` 
 | `src/pages/home` | `src/pages/home/README.md` |
 | `src/pages/credit-create` (formulario + confirmacion) | `src/pages/credit-create/README.md` |
 | `src/pages/credit-list` (consulta + filtros) | `src/pages/credit-list/README.md` |
+| `src/pages/credit-detail` (detalle, editar, eliminar, auditoria, PDF) | `src/pages/credit-detail/README.md` |
 | `src/features` (capa de casos de uso) | `src/features/README.md` |
 | `src/features/auth` | `src/features/auth/README.md` |
 | `src/features/credits` | `src/features/credits/README.md` |
@@ -87,7 +88,7 @@ Un solo `AGENTS.md` en todo el repo (este archivo). Cada capa y slice de `src/` 
 | `src/shared/config` | `src/shared/config/README.md` |
 | `src/shared/lib` | `src/shared/lib/README.md` |
 
-Flujos completos (con diagrama) en `knowledge/`: `knowledge/auth/current-auth-session-flow.md`, `knowledge/credits/current-credit-registration-flow.md`, `knowledge/credits/current-credit-query-flow.md`, `knowledge/android/current-android-build-and-signing-flow.md`.
+Flujos completos (con diagrama) en `knowledge/`: `knowledge/auth/current-auth-session-flow.md`, `knowledge/credits/current-credit-registration-flow.md`, `knowledge/credits/current-credit-query-flow.md`, `knowledge/credits/current-credit-detail-flow.md`, `knowledge/android/current-android-build-and-signing-flow.md`.
 
 ## Documentacion Obligatoria
 - Cambios de estructura FSD: actualizar `src/AGENTS.md` y el AGENTS de capa/slice.

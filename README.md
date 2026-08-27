@@ -55,7 +55,7 @@ sequenceDiagram
 | Layer | Purpose | Doc |
 |---|---|---|
 | `src/app` | Providers and navigation | [`src/app/README.md`](src/app/README.md) |
-| `src/pages` | `login`, `register`, `home`, `credit-create`, `credit-list` | [`src/pages/README.md`](src/pages/README.md) |
+| `src/pages` | `login`, `register`, `home`, `credit-create`, `credit-list`, `credit-detail` | [`src/pages/README.md`](src/pages/README.md) |
 | `src/features` | `auth` and `credits` APIs | [`src/features/README.md`](src/features/README.md) |
 | `src/entities` | Session and credit rules/formatting/payment estimate | [`src/entities/README.md`](src/entities/README.md) |
 | `src/shared` | API client, config, storage, UI kit | [`src/shared/README.md`](src/shared/README.md) |
@@ -145,6 +145,10 @@ npm run build:aab
 ```
 Output: `android/app/build/outputs/bundle/release/app-release.aab`
 
+## CI (GitHub Actions)
+
+`.github/workflows/build-android.yml` builds the release APK and AAB. It's `workflow_dispatch`-only (manual trigger from the Actions tab) — there's no automatic build on push or tag, matching the "builds only when explicitly requested" policy above. It runs `npm run build:apk` and `npm run build:aab` with the signing secrets below and uploads both artifacts.
+
 ## Signing
 
 Production signing uses:
@@ -176,4 +180,5 @@ npm test
 | [`knowledge/auth/current-auth-session-flow.md`](knowledge/auth/current-auth-session-flow.md) | JWT session flow |
 | [`knowledge/credits/current-credit-registration-flow.md`](knowledge/credits/current-credit-registration-flow.md) | Credit registration + confirmation |
 | [`knowledge/credits/current-credit-query-flow.md`](knowledge/credits/current-credit-query-flow.md) | Credit query/filters |
+| [`knowledge/credits/current-credit-detail-flow.md`](knowledge/credits/current-credit-detail-flow.md) | Credit detail: view, edit, delete, audit history, PDF export |
 | [`knowledge/android/current-android-build-and-signing-flow.md`](knowledge/android/current-android-build-and-signing-flow.md) | Build and signing |

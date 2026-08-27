@@ -4,9 +4,9 @@
 - Componentes visuales reutilizables y consistentes.
 
 ## Key Files -> Role
-- `Screen.tsx`: wrapper de pantalla con safe areas.
+- `Screen.tsx`: wrapper de pantalla con safe areas; expone `useScrollToInput` (contexto) para que un `TextField` enfocado pida scroll hasta quedar visible arriba del teclado — un `ScrollView` en Android no hace esto solo, ni siquiera con `windowSoftInputMode="adjustResize"`.
 - `Button.tsx`: accion primaria/secundaria.
-- `TextField.tsx`: input.
+- `TextField.tsx`: input; en `onFocus` consume `useScrollToInput` para pedirle al `Screen` padre que lo lleve a la vista.
 - `Banner.tsx`: mensajes de estado.
 - `BottomSheetModal.tsx`: modal inferior para filtros.
 - `SectionHeader.tsx`: encabezados compactos de listas/secciones.
