@@ -1,5 +1,5 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ArrowLeft, CreditCard, Download, Pencil, Trash2 } from "lucide-react-native";
+import { ArrowLeft, Download, Pencil, Trash2 } from "lucide-react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View, useColorScheme } from "react-native";
 import type { RootStackParamList } from "@/app/AppRouter";
@@ -8,7 +8,7 @@ import type { Credit, CreditAuditEntry } from "@/entities/credit/types";
 import { useSession } from "@/entities/session/SessionContext";
 import { deleteCredit, getCredit, getCreditAudit } from "@/features/credits/api";
 import { downloadAndShareCreditPdf } from "@/features/credits/pdf";
-import { Banner, BottomSheetModal, type BottomSheetModalRef, Button, ErrorMessage, Screen, colors } from "@/shared/ui";
+import { Banner, BottomSheetModal, type BottomSheetModalRef, Button, ErrorMessage, PersonAvatar, Screen, colors } from "@/shared/ui";
 import { CreditAuditHistory } from "./CreditAuditHistory";
 import { DeleteCreditSheetContent } from "./DeleteCreditSheetContent";
 
@@ -149,9 +149,7 @@ export function CreditDetailPage({ navigation, route }: CreditDetailPageProps) {
           <Banner message={error} />
 
           <View className="flex-row items-center gap-3">
-            <View className="size-12 items-center justify-center rounded-full bg-brand-100 dark:bg-neutral-800">
-              <CreditCard color={isDarkMode ? colors.brand400 : colors.brand700} size={22} />
-            </View>
+            <PersonAvatar name={clientFullName(credit)} size={48} />
             <View className="flex-1">
               <Text className="text-xl font-bold text-gray-900 dark:text-neutral-50">{clientFullName(credit)}</Text>
               <Text className="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-neutral-500">

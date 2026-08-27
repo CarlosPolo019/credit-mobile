@@ -4,6 +4,7 @@ export { Button } from "./Button";
 export { colors } from "./colors";
 export { ErrorMessage } from "./ErrorMessage";
 export { OfflineBanner } from "./OfflineBanner";
+export { PersonAvatar, PersonChip } from "./PersonAvatar";
 export { Screen } from "./Screen";
 export { SectionFooterMessage } from "./SectionFooterMessage";
 export { SectionFooterSpinner } from "./SectionFooterSpinner";

@@ -1,5 +1,5 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ArrowLeft, ChevronLeft, ChevronRight, Mail, Search } from "lucide-react-native";
+import { ArrowLeft, ChevronLeft, ChevronRight, Search } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View, useColorScheme } from "react-native";
 import type { RootStackParamList } from "@/app/AppRouter";
@@ -7,7 +7,7 @@ import { formatCurrency, formatDate } from "@/entities/credit/format";
 import type { EmailJob, EmailJobFilters, EmailJobStatus } from "@/entities/email-job/types";
 import { useSession } from "@/entities/session/SessionContext";
 import { listEmailJobs } from "@/features/email-jobs/api";
-import { ErrorMessage, Screen, SectionFooterMessage, colors } from "@/shared/ui";
+import { ErrorMessage, PersonChip, Screen, SectionFooterMessage, colors } from "@/shared/ui";
 
 type EmailJobListPageProps = NativeStackScreenProps<RootStackParamList, "EmailJobList">;
 
@@ -208,22 +208,16 @@ function EmailJobRow({ job }: { job: EmailJob }) {
   return (
     <View className="gap-1 border-t border-gray-200 py-4 dark:border-neutral-800">
       <View className="flex-row items-start justify-between gap-2">
-        <View className="flex-1 flex-row items-center gap-3">
-          <View className="size-10 items-center justify-center rounded-full bg-brand-100 dark:bg-neutral-800">
-            <Mail color={colors.brand700} size={18} />
-          </View>
-          <View className="flex-1">
-            <Text className="font-semibold text-gray-900 dark:text-neutral-50">{job.clientName}</Text>
-            <Text className="mt-1 text-gray-500 dark:text-neutral-400">{job.recipient}</Text>
-          </View>
+        <View className="flex-1">
+          <PersonChip name={job.clientName} secondaryText={job.recipient} size={40} />
         </View>
         <View className={`rounded-full px-2 py-1 ${style.bg}`}>
           <Text className={`text-xs font-semibold ${style.text}`}>{style.label}</Text>
         </View>
       </View>
-      <Text className="text-gray-500 dark:text-neutral-400">
-        {formatCurrency(job.creditAmount)} · {job.salespersonName} · {formatDate(job.createdAt)}
-      </Text>
+      <View className="ml-[52px]">
+        <PersonChip name={job.salespersonName} secondaryText={`${formatCurrency(job.creditAmount)} · ${formatDate(job.createdAt)}`} size={22} />
+      </View>
       {showError ? <Text className="text-red-600 dark:text-red-400">{job.lastError}</Text> : null}
     </View>
   );

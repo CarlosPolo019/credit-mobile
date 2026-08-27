@@ -1,7 +1,7 @@
 import { LogOut } from "lucide-react-native";
-import { Image, Text, View, useColorScheme } from "react-native";
+import { Text, View, useColorScheme } from "react-native";
 import type { SessionUser } from "@/entities/session/types";
-import { Button, colors } from "@/shared/ui";
+import { Button, PersonAvatar, colors } from "@/shared/ui";
 
 type ProfileSheetContentProps = {
   user: SessionUser | undefined;
@@ -20,11 +20,7 @@ export function ProfileSheetContent({ user, isOnline, queueCounts, isSyncing, on
   return (
     <View className="flex-1 bg-white px-6 dark:bg-neutral-950">
       <View className="items-center gap-3 py-6">
-        <Image
-          source={require("../../../assets/images/fya-mark.png")}
-          className="h-16 w-16 rounded-full bg-brand-100 dark:bg-neutral-800"
-          resizeMode="contain"
-        />
+        <PersonAvatar name={displayName} size={64} />
         <View className="items-center">
           <Text className="text-lg font-bold text-gray-900 dark:text-neutral-50">{displayName}</Text>
           {user?.document ? <Text className="text-sm text-gray-500 dark:text-neutral-400">{user.document}</Text> : null}

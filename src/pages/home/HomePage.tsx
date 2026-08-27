@@ -7,7 +7,7 @@ import { useSession } from "@/entities/session/SessionContext";
 import { countPendingAndFailed } from "@/features/credits/offlineQueue";
 import { syncQueuedCredits } from "@/features/credits/offlineSync";
 import { useNetworkStatus } from "@/shared/network/NetworkStatusContext";
-import { BottomSheetModal, type BottomSheetModalRef, Screen, colors } from "@/shared/ui";
+import { BottomSheetModal, type BottomSheetModalRef, PersonAvatar, Screen, colors } from "@/shared/ui";
 import { ProfileSheetContent } from "./ProfileSheetContent";
 
 type HomePageProps = NativeStackScreenProps<RootStackParamList, "Home">;
@@ -68,11 +68,7 @@ export function HomePage({ navigation }: HomePageProps) {
           accessibilityLabel="Perfil"
           className="relative mt-1"
         >
-          <Image
-            source={require("../../../assets/images/fya-mark.png")}
-            className="h-10 w-10 rounded-full bg-brand-100 dark:bg-neutral-800"
-            resizeMode="contain"
-          />
+          <PersonAvatar name={displayName} size={40} />
           {hasQueuedCredits ? (
             <View className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-white bg-red-600 dark:border-neutral-950" />
           ) : null}

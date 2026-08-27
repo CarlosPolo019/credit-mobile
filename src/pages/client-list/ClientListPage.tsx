@@ -1,12 +1,12 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ArrowLeft, ChevronLeft, ChevronRight, Search, Users } from "lucide-react-native";
+import { ArrowLeft, ChevronLeft, ChevronRight, Search } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View, useColorScheme } from "react-native";
 import type { RootStackParamList } from "@/app/AppRouter";
 import type { Client } from "@/entities/credit/types";
 import { useSession } from "@/entities/session/SessionContext";
 import { listClients } from "@/features/credits/api";
-import { ErrorMessage, Screen, SectionFooterMessage, colors } from "@/shared/ui";
+import { ErrorMessage, PersonChip, Screen, SectionFooterMessage, colors } from "@/shared/ui";
 
 type ClientListPageProps = NativeStackScreenProps<RootStackParamList, "ClientList">;
 
@@ -101,14 +101,8 @@ export function ClientListPage({ navigation }: ClientListPageProps) {
       ) : (
         <View className="flex-1">
           {pagedClients.map((client) => (
-            <View key={client.document} className="flex-row items-center gap-4 border-t border-gray-200 py-4 dark:border-neutral-800">
-              <View className="size-10 items-center justify-center rounded-full bg-brand-100 dark:bg-neutral-800">
-                <Users color={isDarkMode ? colors.brand400 : colors.brand700} size={18} />
-              </View>
-              <View className="flex-1">
-                <Text className="font-semibold text-gray-900 dark:text-neutral-50">{client.fullName}</Text>
-                <Text className="mt-1 text-gray-500 dark:text-neutral-400">{client.document}</Text>
-              </View>
+            <View key={client.document} className="border-t border-gray-200 py-4 dark:border-neutral-800">
+              <PersonChip name={client.fullName} secondaryText={client.document} size={40} />
             </View>
           ))}
         </View>
