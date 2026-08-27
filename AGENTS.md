@@ -13,6 +13,7 @@ Guia operativa para agentes que trabajen en `credit-mobile`.
 - Config: `CREDIT_API_BASE_URL` genera `src/shared/config/generated.env.ts`.
 - Android: solo permiso `INTERNET`; release APK/AAB por Gradle.
 - Creditos: crear, listar, ver detalle, editar, eliminar, exportar a PDF (generado en `credit-backend`, no en el dispositivo) e historial de auditoria — ver `knowledge/credits/current-credit-detail-flow.md`.
+- Cliente por cedula: al crear (no al editar), la cedula tiene autocomplete contra `GET /api/v1/clients` (mismo dato que `credit-web`); si matchea, el nombre se autocompleta y los campos quedan solo lectura, evitando nombres inconsistentes para la misma cedula.
 - Splash: `src/app/Splash.tsx` (branded, `Animated` de RN, sin libreria nativa nueva) + `android/.../drawable/splash_background.xml` para el arranque en frio.
 - Offline: `NetworkStatusProvider`/`OfflineBanner` (via `@react-native-community/netinfo`) detectan conectividad global; solo la creacion de creditos funciona sin internet, encolando en `AsyncStorage` (`features/credits/offlineQueue.ts`) y sincronizando al volver la conexion (`features/credits/offlineSync.ts`) — ver `knowledge/credits/current-credit-offline-queue-flow.md`.
 - Cold start del backend: `src/app/BackendWakeGate.tsx` hace polling a `/actuator/health` (Render free tier duerme tras inactividad) y muestra mensajes de espera antes de dejar entrar a `AppRouter`. No hay job externo/CI manteniendo el backend despierto (se probo y no era confiable, ver `credit-backend/docs/deployment.md`).

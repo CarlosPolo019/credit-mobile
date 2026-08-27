@@ -4,7 +4,7 @@
 - Exponer operaciones REST de creditos.
 
 ## Key Files -> Role
-- `api.ts`: `createCredit`, `estimateCredit` (`POST /credits/estimate`, cuota/total sin guardar), `listCredits` (filtros y sort), `getCredit`, `updateCredit`, `deleteCredit`, `getCreditAudit`.
+- `api.ts`: `createCredit`, `estimateCredit` (`POST /credits/estimate`, cuota/total sin guardar), `listCredits` (filtros y sort), `getCredit`, `updateCredit`, `deleteCredit`, `getCreditAudit`, `listClients` (`GET /api/v1/clients`, usado por el autocomplete de cedula en `CreditForm`).
 - `pdf.ts`: `downloadAndShareCreditPdf` — descarga el PDF del backend (`GET /credits/{id}/pdf`, con el token, via `react-native-blob-util`) y lo comparte con `react-native-share`.
 - `offlineQueue.ts`: cola local de creditos pendientes de sincronizar, persistida en `AsyncStorage` (`enqueueCredit`, `listQueuedCredits`, `countPendingAndFailed`, `markQueuedCreditSyncing`, `markQueuedCreditFailed`, `removeQueuedCredit`). Cada item: `{ id, payload, createdAt, attempts, status: "pending" | "syncing" | "failed", lastError }`.
 - `offlineSync.ts`: `syncQueuedCredits` — recorre la cola y llama a `createCredit` por cada item; si funciona lo saca de la cola, si falla lo marca `failed` con el mensaje de error saneado. Un item fallido no bloquea a los demas.

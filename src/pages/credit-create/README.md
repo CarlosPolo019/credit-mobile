@@ -5,12 +5,12 @@
 
 ## Key Files -> Role
 - `CreditCreatePage.tsx`: wrapper delgado (header + banner de exito) sobre `CreditForm` en modo `create`. Sin internet, no llama a `createCredit`: encola el credito con `enqueueCredit` y muestra el mensaje de exito offline.
-- `CreditForm.tsx`: formulario (cedula primero, sin campo Comercial visible), validacion, pide la estimacion al backend y orquesta el sheet de confirmacion. Compartido con `credit-detail/CreditEditPage.tsx` (`mode="edit"`). En modo `create` sin internet, salta la llamada a `estimateCredit` y abre el sheet igual (con `estimate = null`) para que la creacion offline sea alcanzable; en modo `edit` siempre pide la estimacion (editar requiere internet).
+- `CreditForm.tsx`: formulario (cedula primero, sin campo Comercial visible), validacion, pide la estimacion al backend y orquesta el sheet de confirmacion. Compartido con `credit-detail/CreditEditPage.tsx` (`mode="edit"`). En modo `create` sin internet, salta la llamada a `estimateCredit` y abre el sheet igual (con `estimate = null`) para que la creacion offline sea alcanzable; en modo `edit` siempre pide la estimacion (editar requiere internet). Tambien en modo `create`, la cedula tiene autocomplete: trae `listClients()` una vez al montar y filtra localmente (hasta 5 sugerencias) mientras se tipea; tocar una sugerencia autocompleta y deshabilita los 4 campos de nombre (solo lectura, igual que `credit-web`).
 - `CreditConfirmSheetContent.tsx`: bottom sheet de confirmacion (resumen + cuota/total estimados, recibidos por props). `monthlyPayment`/`totalToPay` son `number | null`; si son `null` (creacion offline) muestra "No disponible sin conexión" en vez de romper.
 
 ## External Deps
 - `entities/credit/validation.ts`
-- `features/credits/api.ts` (`createCredit`, `estimateCredit`)
+- `features/credits/api.ts` (`createCredit`, `estimateCredit`, `listClients`)
 - `features/credits/offlineQueue.ts` (`enqueueCredit`)
 - `shared/network/NetworkStatusContext.tsx`
 - `shared/ui` (`BottomSheetModal`)
