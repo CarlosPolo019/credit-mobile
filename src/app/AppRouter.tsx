@@ -1,10 +1,12 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { ActivityIndicator, View } from "react-native";
 import { useSession } from "@/entities/session/SessionContext";
+import { ClientListPage } from "@/pages/client-list/ClientListPage";
 import { CreditCreatePage } from "@/pages/credit-create/CreditCreatePage";
 import { CreditDetailPage } from "@/pages/credit-detail/CreditDetailPage";
 import { CreditEditPage } from "@/pages/credit-detail/CreditEditPage";
 import { CreditListPage } from "@/pages/credit-list/CreditListPage";
+import { EmailJobListPage } from "@/pages/email-job-list/EmailJobListPage";
 import { HomePage } from "@/pages/home/HomePage";
 import { LoginPage } from "@/pages/login/LoginPage";
 import { RegisterPage } from "@/pages/register/RegisterPage";
@@ -19,6 +21,8 @@ export type RootStackParamList = {
   CreditList: undefined;
   CreditDetail: { creditId: string };
   CreditEdit: { creditId: string };
+  ClientList: undefined;
+  EmailJobList: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -50,6 +54,8 @@ export function AppRouter() {
             <Stack.Screen name="CreditList" component={CreditListPage} options={{ title: "Consultar créditos" }} />
             <Stack.Screen name="CreditDetail" component={CreditDetailPage} options={{ title: "Detalle de crédito" }} />
             <Stack.Screen name="CreditEdit" component={CreditEditPage} options={{ title: "Editar crédito" }} />
+            <Stack.Screen name="ClientList" component={ClientListPage} options={{ title: "Clientes" }} />
+            <Stack.Screen name="EmailJobList" component={EmailJobListPage} options={{ title: "Correos" }} />
           </>
         ) : (
           <>

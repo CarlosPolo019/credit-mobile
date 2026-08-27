@@ -10,6 +10,8 @@
 - `credit-create/`: registro (`CreditForm.tsx`, mode-aware, tambien usado por `credit-edit`).
 - `credit-list/`: consulta; cada fila navega al detalle.
 - `credit-detail/`: detalle, editar (via `CreditEditPage` + `CreditForm` en modo `edit`), eliminar, exportar PDF, historial de auditoria.
+- `client-list/`: directorio de clientes de solo lectura, solo `role: "ADMIN"`.
+- `email-job-list/`: estado de notificaciones por correo, solo `role: "ADMIN"` (tambien exigido por el backend).
 
 ## External Deps
 - React Navigation route props.

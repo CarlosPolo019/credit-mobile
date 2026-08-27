@@ -128,10 +128,12 @@ El lifecycle de npm escribe `src/shared/config/generated.env.ts` antes de los co
 - Registro de cuenta con documento numérico y contraseña.
 - Token guardado en Keychain.
 - Registrar crédito con un paso de confirmación (cuota mensual/total estimados) antes de enviar.
-- Consultar créditos activos: filtrar por cliente, documento, comercial (select); ordenar por fecha o monto.
+- Consultar créditos activos: filtrar por cliente, documento, comercial (select); ordenar por fecha o monto; paginado (6 por página).
+- Cédula con autocomplete al registrar: si ya existe, el nombre se completa solo y queda de solo lectura.
 - Detalle de crédito: ver, editar, eliminar, historial de auditoría (quién cambió qué) y exportar como PDF generado en el servidor.
 - Creación de créditos offline: funciona sin internet guardando en cola local y sincronizando automáticamente (o manualmente, desde el sheet de perfil) al recuperar la conexión; editar/eliminar/PDF/login/registro siguen requiriendo internet.
 - Pantalla de "despertando el servidor": antes de Login/Register, si el backend (Render free tier) está dormido, la app hace polling a `/actuator/health` con mensajes de espera en vez de mostrar un error de conexión confuso. Con sesión ya iniciada no bloquea nada — la cola offline permite seguir registrando créditos sin esperar al backend.
+- Clientes y Correos: solo para `role: "ADMIN"` (hoy, Carlos Escorcia) — dos accesos extra en Home, paginados (6 por página). Correos también lo exige el backend (403 para cualquier otra cuenta); Clientes solo lo restringe la pantalla, el dato es el mismo que usa el autocomplete.
 - Splash screen animado con marca e ícono de la app.
 - Manejo de sesión expirada.
 

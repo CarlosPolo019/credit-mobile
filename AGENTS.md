@@ -14,6 +14,7 @@ Guia operativa para agentes que trabajen en `credit-mobile`.
 - Android: solo permiso `INTERNET`; release APK/AAB por Gradle.
 - Creditos: crear, listar, ver detalle, editar, eliminar, exportar a PDF (generado en `credit-backend`, no en el dispositivo) e historial de auditoria — ver `knowledge/credits/current-credit-detail-flow.md`.
 - Cliente por cedula: al crear (no al editar), la cedula tiene autocomplete contra `GET /api/v1/clients` (mismo dato que `credit-web`); si matchea, el nombre se autocompleta y los campos quedan solo lectura, evitando nombres inconsistentes para la misma cedula.
+- Clientes y Correos: pantallas nuevas (`pages/client-list`, `pages/email-job-list`), accesibles desde `HomePage` solo si `session.user.role === "ADMIN"` (hoy, unicamente Carlos Escorcia); si se navega igual sin el rol, redirigen a `Home`. `/api/v1/email-jobs` ademas lo exige el backend (403 para `USER`); `/api/v1/clients` no tiene esa restriccion en el backend (lo usa el autocomplete, abierto a todos), solo la pantalla es de admin. Ambas listas paginan en el cliente, 6 por pagina.
 - Splash: `src/app/Splash.tsx` (branded, `Animated` de RN, sin libreria nativa nueva) + `android/.../drawable/splash_background.xml` para el arranque en frio.
 - Offline: `NetworkStatusProvider`/`OfflineBanner` (via `@react-native-community/netinfo`) detectan conectividad global; solo la creacion de creditos funciona sin internet, encolando en `AsyncStorage` (`features/credits/offlineQueue.ts`) y sincronizando al volver la conexion (`features/credits/offlineSync.ts`) — ver `knowledge/credits/current-credit-offline-queue-flow.md`.
 - Cold start del backend: `src/app/BackendWakeGate.tsx` hace polling a `/actuator/health` (Render free tier duerme tras inactividad) y muestra mensajes de espera antes de dejar entrar a `AppRouter`. No hay job externo/CI manteniendo el backend despierto (se probo y no era confiable, ver `credit-backend/docs/deployment.md`).
@@ -79,12 +80,16 @@ Un solo `AGENTS.md` en todo el repo (este archivo). Cada capa y slice de `src/` 
 | `src/pages/credit-create` (formulario + confirmacion) | `src/pages/credit-create/README.md` |
 | `src/pages/credit-list` (consulta + filtros) | `src/pages/credit-list/README.md` |
 | `src/pages/credit-detail` (detalle, editar, eliminar, auditoria, PDF) | `src/pages/credit-detail/README.md` |
+| `src/pages/client-list` (directorio de clientes, solo `ADMIN`) | `src/pages/client-list/README.md` |
+| `src/pages/email-job-list` (estado de correos, solo `ADMIN`) | `src/pages/email-job-list/README.md` |
 | `src/features` (capa de casos de uso) | `src/features/README.md` |
 | `src/features/auth` | `src/features/auth/README.md` |
 | `src/features/credits` | `src/features/credits/README.md` |
+| `src/features/email-jobs` (solo lectura, admin) | `src/features/email-jobs/README.md` |
 | `src/entities` (capa de dominio) | `src/entities/README.md` |
 | `src/entities/session` | `src/entities/session/README.md` |
 | `src/entities/credit` (validacion, formato, pago estimado) | `src/entities/credit/README.md` |
+| `src/entities/email-job` (tipos, solo lectura) | `src/entities/email-job/README.md` |
 | `src/shared` (capa transversal) | `src/shared/README.md` |
 | `src/shared/ui` (componentes base, paleta de marca) | `src/shared/ui/README.md` |
 | `src/shared/api` | `src/shared/api/README.md` |

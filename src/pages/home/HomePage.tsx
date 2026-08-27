@@ -1,5 +1,5 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ListChecks, PlusCircle } from "lucide-react-native";
+import { ListChecks, Mail, PlusCircle, Users } from "lucide-react-native";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { Image, Text, TouchableHighlight, TouchableOpacity, View, useColorScheme } from "react-native";
 import type { RootStackParamList } from "@/app/AppRouter";
@@ -17,6 +17,7 @@ export function HomePage({ navigation }: HomePageProps) {
   const { session, logout } = useSession();
   const { isOnline } = useNetworkStatus();
   const displayName = session?.user?.fullName || session?.user?.document || session?.user?.username || "Usuario";
+  const isAdmin = session?.user?.role === "ADMIN";
   const [queueCounts, setQueueCounts] = useState({ pending: 0, failed: 0 });
   const [isSyncing, setIsSyncing] = useState(false);
   const profileSheetRef = useRef<BottomSheetModalRef>(null);
@@ -91,6 +92,22 @@ export function HomePage({ navigation }: HomePageProps) {
           icon={<ListChecks color={isDarkMode ? colors.brand400 : colors.brand700} size={24} />}
           onPress={() => navigation.navigate("CreditList")}
         />
+        {isAdmin ? (
+          <>
+            <ActionRow
+              title="Clientes"
+              caption="Directorio de clientes registrados"
+              icon={<Users color={isDarkMode ? colors.brand400 : colors.brand700} size={24} />}
+              onPress={() => navigation.navigate("ClientList")}
+            />
+            <ActionRow
+              title="Correos"
+              caption="Estado de las notificaciones enviadas"
+              icon={<Mail color={isDarkMode ? colors.brand400 : colors.brand700} size={24} />}
+              onPress={() => navigation.navigate("EmailJobList")}
+            />
+          </>
+        ) : null}
       </View>
 
       <BottomSheetModal ref={profileSheetRef}>
