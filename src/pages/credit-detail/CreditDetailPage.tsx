@@ -8,7 +8,7 @@ import type { Credit, CreditAuditEntry } from "@/entities/credit/types";
 import { useSession } from "@/entities/session/SessionContext";
 import { deleteCredit, getCredit, getCreditAudit } from "@/features/credits/api";
 import { downloadAndShareCreditPdf } from "@/features/credits/pdf";
-import { Banner, BottomSheetModal, type BottomSheetModalRef, Button, ErrorMessage, PersonAvatar, Screen, colors } from "@/shared/ui";
+import { Banner, BottomSheetModal, type BottomSheetModalRef, Button, ErrorMessage, PersonAvatar, PersonChip, Screen, colors } from "@/shared/ui";
 import { CreditAuditHistory } from "./CreditAuditHistory";
 import { DeleteCreditSheetContent } from "./DeleteCreditSheetContent";
 
@@ -198,10 +198,8 @@ export function CreditDetailPage({ navigation, route }: CreditDetailPageProps) {
 
           <View className="gap-3 rounded-2xl border border-gray-100 p-4 dark:border-neutral-900">
             <Text className="text-sm font-bold text-gray-900 dark:text-neutral-50">Registro</Text>
-            <View className="flex-row gap-6">
-              <DetailRow label="Comercial" value={credit.salespersonName} />
-              <DetailRow label="Fecha" value={formatDate(credit.createdAt)} />
-            </View>
+            <PersonChip name={credit.salespersonName} secondaryText="Comercial" size={32} />
+            <DetailRow label="Fecha" value={formatDate(credit.createdAt)} />
           </View>
 
           <View className="gap-2 rounded-2xl border border-gray-100 p-4 dark:border-neutral-900">
