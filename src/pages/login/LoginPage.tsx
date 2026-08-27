@@ -1,13 +1,13 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
-import { Image, KeyboardAvoidingView, Platform, Text, TouchableOpacity, View } from "react-native";
+import { Image, KeyboardAvoidingView, Platform, Text, View } from "react-native";
 import type { RootStackParamList } from "@/app/AppRouter";
 import { useSession } from "@/entities/session/SessionContext";
 import { Banner, Button, Screen, TextField } from "@/shared/ui";
 
 type LoginPageProps = NativeStackScreenProps<RootStackParamList, "Login">;
 
-export function LoginPage({ navigation }: LoginPageProps) {
+export function LoginPage(_props: LoginPageProps) {
   const { login } = useSession();
   const [values, setValues] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
@@ -55,9 +55,6 @@ export function LoginPage({ navigation }: LoginPageProps) {
           />
           <TextField label="Clave" value={values.password} onChangeText={(value) => setValue("password", value)} secureTextEntry />
           <Button title="Ingresar" loading={loading} onPress={submit} className="mt-2" />
-          <TouchableOpacity onPress={() => navigation.navigate("Register")} activeOpacity={0.6} className="items-center py-3">
-            <Text className="text-sm font-semibold text-brand-700 dark:text-brand-400">Crear cuenta con cédula</Text>
-          </TouchableOpacity>
         </View>
       </Screen>
     </KeyboardAvoidingView>
