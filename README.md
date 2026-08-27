@@ -29,13 +29,22 @@ sequenceDiagram
   participant Form as CreditForm
   participant Sheet as CreditConfirmSheetContent
   participant API as credit-backend
-  User->>Form: Completa cédula, nombre, valor, tasa, plazo
+  Form->>API: GET /api/v1/clients (al montar, solo modo create)
+  API-->>Form: listado completo de clientes
+  User->>Form: Escribe la cédula (sugerencias filtran localmente)
+  alt cédula ya existe
+    User->>Form: Toca la sugerencia
+    Form->>Form: autocompleta el nombre, campos quedan solo lectura
+  else cédula nueva
+    User->>Form: Completa nombre, valor, tasa, plazo
+  end
   Form->>Form: valida (sin pedir Comercial: viene de la sesión)
   Form->>API: POST /api/v1/credits/estimate
   API-->>Form: cuota y total estimados
   Form->>Sheet: abre resumen + estimación (recibida del backend)
   User->>Sheet: Confirmar y registrar
   Sheet->>API: POST /api/v1/credits (Bearer JWT)
+  API->>API: sincroniza el cliente en clients (upsert)
   API-->>Sheet: 201 CreditResponse
   Sheet-->>User: sheet se cierra, formulario se limpia
 ```
