@@ -13,5 +13,5 @@
 ## Risks / TODOs
 - No persistir passwords.
 - No navegar manualmente si `SessionProvider` ya cambia el stack.
-- Ofrecer acceso a `Register` sin requerir sesion.
 - No forzar teclado numerico en login: el backend acepta `username` y conserva usuario demo.
+- Sin auto-registro: las cuentas se crean solo desde `credit-web` (`/users`, admin-only). El backend sigue exponiendo `POST /api/v1/auth/register` (publico), pero ningun cliente lo usa hoy.

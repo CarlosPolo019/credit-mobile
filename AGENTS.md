@@ -52,7 +52,7 @@ Reglas:
 - Componentes en `.tsx`; helpers, API y config en `.ts`.
 - NativeWind es la capa visual principal; usar `colors.ts` para tokens compartidos e iconos de `lucide-react-native`.
 - Login mobile sigue el contrato backend `POST /api/v1/auth/login` con `{ username, password }`; `username` puede ser cedula registrada o usuario demo.
-- Registro mobile sigue el contrato backend `POST /api/v1/auth/register` con `{ fullName, document, password }`; `document` debe ser numerico.
+- Sin auto-registro en mobile: las cuentas se crean solo desde `credit-web` (`/users`, admin-only). `POST /api/v1/auth/register` sigue existiendo en el backend (publico) pero ningun cliente lo usa.
 - UI copy puede estar en espanol; docs y codigo deben ser claros y consistentes.
 - `generated.env.ts` es generado, no se edita manualmente.
 - `debug.keystore` es solo fallback local generado; produccion usa secrets.

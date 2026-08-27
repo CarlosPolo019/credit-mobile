@@ -6,20 +6,8 @@ export type LoginPayload = {
   password: string;
 };
 
-export type RegisterPayload = {
-  fullName: string;
-  document: string;
-  password: string;
-};
-
 export async function loginRequest(username: string, password: string) {
   const payload: LoginPayload = { username, password };
   const response = await api.post("/api/v1/auth/login", payload);
-  return response.data as Session;
-}
-
-export async function registerRequest(fullName: string, document: string, password: string) {
-  const payload: RegisterPayload = { fullName, document, password };
-  const response = await api.post("/api/v1/auth/register", payload);
   return response.data as Session;
 }

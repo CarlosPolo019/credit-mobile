@@ -4,11 +4,10 @@
 - `active`
 
 ## Proposito
-- Registrar por cedula o autenticar por `username` del backend y conservar la sesion JWT en Keychain.
+- Autenticar por `username` del backend y conservar la sesion JWT en Keychain.
 
 ## Participantes
 - `pages/login/LoginPage.tsx`
-- `pages/register/RegisterPage.tsx`
 - `features/auth/api.ts`
 - `entities/session/SessionContext.tsx`
 - `shared/lib/storage/sessionStorage.ts`
@@ -32,7 +31,7 @@ sequenceDiagram
 
 Login usa el campo backend `username`. Para usuarios registrados ese valor es la cedula normalizada; para compatibilidad tambien puede ser el usuario demo configurado por ambiente.
 
-Registro usa `POST /api/v1/auth/register` con `fullName`, `document` y `password`, y persiste la misma respuesta de sesion. En registro, `document` debe ser numerico.
+Sin auto-registro en mobile: las cuentas se crean solo desde `credit-web` (`/users`, admin-only, `POST /api/v1/users`). El backend sigue exponiendo `POST /api/v1/auth/register` (publico, siempre `role: "USER"`), pero ningun cliente mobile lo llama — `pages/register/RegisterPage.tsx` existio en una version anterior y se elimino para mantener la creacion de cuentas centralizada en el administrador.
 
 ## Errores
 - Credenciales invalidas: mostrar banner y no guardar sesion.
@@ -41,4 +40,4 @@ Registro usa `POST /api/v1/auth/register` con `fullName`, `document` y `password
 
 ## Validacion
 - `npm test`
-- Prueba manual: registrar cedula, cerrar app, abrir app y verificar restauracion; luego logout/login con la misma cedula o con el usuario demo.
+- Prueba manual: login con una cedula existente o el usuario demo, cerrar app, abrir app y verificar restauracion de sesion; luego logout/login de nuevo.

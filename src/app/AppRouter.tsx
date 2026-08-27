@@ -9,13 +9,11 @@ import { CreditListPage } from "@/pages/credit-list/CreditListPage";
 import { EmailJobListPage } from "@/pages/email-job-list/EmailJobListPage";
 import { HomePage } from "@/pages/home/HomePage";
 import { LoginPage } from "@/pages/login/LoginPage";
-import { RegisterPage } from "@/pages/register/RegisterPage";
 import { colors, OfflineBanner } from "@/shared/ui";
 import { BackendWakeGate } from "./BackendWakeGate";
 
 export type RootStackParamList = {
   Login: undefined;
-  Register: undefined;
   Home: undefined;
   CreditCreate: undefined;
   CreditList: undefined;
@@ -58,10 +56,7 @@ export function AppRouter() {
             <Stack.Screen name="EmailJobList" component={EmailJobListPage} options={{ title: "Correos" }} />
           </>
         ) : (
-          <>
-            <Stack.Screen name="Login" component={LoginPage} options={{ title: "Ingreso" }} />
-            <Stack.Screen name="Register" component={RegisterPage} options={{ title: "Registro" }} />
-          </>
+          <Stack.Screen name="Login" component={LoginPage} options={{ title: "Ingreso" }} />
         )}
       </Stack.Navigator>
     </View>

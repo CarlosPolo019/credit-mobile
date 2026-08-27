@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { loginRequest, registerRequest } from "@/features/auth/api";
+import { loginRequest } from "@/features/auth/api";
 import { configureApi } from "@/shared/api/client";
 import { clearSession, readSession, writeSession } from "@/shared/lib/storage/sessionStorage";
 import type { Session } from "./types";
@@ -10,7 +10,6 @@ type SessionContextValue = {
   isRestoring: boolean;
   isAuthenticated: boolean;
   login: (username: string, password: string) => Promise<void>;
-  register: (fullName: string, document: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
@@ -62,21 +61,15 @@ export function SessionProvider({ children }: SessionProviderProps) {
     await persistSession(response);
   }, [persistSession]);
 
-  const register = useCallback(async (fullName: string, document: string, password: string) => {
-    const response = await registerRequest(fullName, document, password);
-    await persistSession(response);
-  }, [persistSession]);
-
   const value = useMemo(
     () => ({
       session,
       isRestoring,
       isAuthenticated: Boolean(session?.token),
       login,
-      register,
       logout,
     }),
-    [isRestoring, login, logout, register, session],
+    [isRestoring, login, logout, session],
   );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
