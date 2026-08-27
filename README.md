@@ -1,6 +1,6 @@
 # Credit Mobile
 
-React Native Android client for the Fya Social Capital credit technical test — the field-operative counterpart to `credit-web`.
+App Android (React Native) para la prueba técnica de créditos de Fya Social Capital — la contraparte para el comercial en campo de `credit-web`.
 
 ## Sobre esta prueba técnica
 
