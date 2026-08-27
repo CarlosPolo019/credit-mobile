@@ -16,8 +16,8 @@ Este repo es **uno de los tres entregables independientes** de la prueba técnic
 
 ```mermaid
 flowchart LR
-  web["credit-web<br/>React admin"] -->|REST + JWT| api["credit-backend<br/>Spring Boot"]
-  mobile["credit-mobile<br/>React Native"] -->|REST + JWT| api
+  web["credit-web · React admin"] -->|REST + JWT| api["credit-backend · Spring Boot"]
+  mobile["credit-mobile · React Native"] -->|REST + JWT| api
   api --> firestore[("Cloud Firestore")]
 ```
 
