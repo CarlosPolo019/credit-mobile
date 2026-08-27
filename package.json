@@ -28,12 +28,10 @@
     "nativewind": "^4.2.6",
     "react": "19.2.0",
     "react-native": "0.83.0",
-    "react-native-blob-util": "^0.24.10",
     "react-native-gesture-handler": "^2.30.0",
     "react-native-keychain": "^10.0.0",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "4.25.0",
-    "react-native-share": "^12.3.1",
     "react-native-svg": "^15.15.5"
   },
   "devDependencies": {

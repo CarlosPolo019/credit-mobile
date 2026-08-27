@@ -1,5 +1,5 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ArrowLeft, Download, Pencil, Trash2 } from "lucide-react-native";
+import { ArrowLeft, FileText, Pencil, Trash2 } from "lucide-react-native";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View, useColorScheme } from "react-native";
 import type { RootStackParamList } from "@/app/AppRouter";
@@ -7,7 +7,7 @@ import { formatCurrency, formatDate } from "@/entities/credit/format";
 import type { Credit, CreditAuditEntry } from "@/entities/credit/types";
 import { useSession } from "@/entities/session/SessionContext";
 import { deleteCredit, getCredit, getCreditAudit } from "@/features/credits/api";
-import { downloadAndShareCreditPdf } from "@/features/credits/pdf";
+import { openCreditPdf } from "@/features/credits/pdf";
 import { Banner, BottomSheetModal, type BottomSheetModalRef, Button, ErrorMessage, PersonAvatar, PersonChip, Screen, colors } from "@/shared/ui";
 import { CreditAuditHistory } from "./CreditAuditHistory";
 import { DeleteCreditSheetContent } from "./DeleteCreditSheetContent";
@@ -101,9 +101,9 @@ export function CreditDetailPage({ navigation, route }: CreditDetailPageProps) {
     setExporting(true);
     setError("");
     try {
-      await downloadAndShareCreditPdf(creditId, session?.token ?? null);
+      await openCreditPdf(creditId, session?.token ?? null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "No se pudo exportar el PDF.");
+      setError(err instanceof Error ? err.message : "No se pudo abrir el PDF.");
     } finally {
       setExporting(false);
     }
@@ -172,9 +172,9 @@ export function CreditDetailPage({ navigation, route }: CreditDetailPageProps) {
             <Button title="Eliminar" variant="secondary" icon={<Trash2 color="#dc2626" size={16} />} onPress={() => deleteSheetRef.current?.present()} className="flex-1" />
           </View>
           <Button
-            title={exporting ? "Generando..." : "Exportar PDF"}
+            title={exporting ? "Abriendo..." : "Ver PDF"}
             variant="primary"
-            icon={<Download color={colors.ink} size={16} />}
+            icon={<FileText color={colors.ink} size={16} />}
             onPress={handleExport}
             loading={exporting}
           />

@@ -1,31 +1,26 @@
-import ReactNativeBlobUtil from "react-native-blob-util";
-import Share from "react-native-share";
+import { Linking } from "react-native";
 import { config } from "@/shared/config/env";
 
 /**
- * Downloads the server-rendered credit PDF (GET /credits/{id}/pdf) and hands
- * it to the share sheet. Uses react-native-blob-util directly instead of the
- * shared axios client: a plain <a href> / Linking.openURL can't carry the
- * Bearer token, and the PDF is a binary file, not JSON.
+ * Opens the server-rendered credit PDF (GET /credits/{id}/pdf) directly in
+ * the system browser instead of downloading it into the app and handing it
+ * to the share sheet — that download+share path (react-native-blob-util +
+ * react-native-share) was unreliable on real devices ("Download
+ * Interrupted" depending on which app the user picked). The browser has its
+ * own PDF viewer and just needs the URL.
+ *
+ * A regular browser tab can't attach an Authorization header, so the token
+ * travels as a query param instead — the backend's JwtAuthenticationFilter
+ * accepts that only for this one route. Content-Disposition on the backend
+ * is `inline`, so the browser renders it instead of forcing a download.
  */
-export async function downloadAndShareCreditPdf(creditId: string, token: string | null) {
+export function creditPdfUrl(creditId: string, token: string) {
+  return `${config.apiBaseUrl}/api/v1/credits/${creditId}/pdf?token=${encodeURIComponent(token)}`;
+}
+
+export async function openCreditPdf(creditId: string, token: string | null) {
   if (!token) {
     throw new Error("No hay sesión activa.");
   }
-  const path = `${ReactNativeBlobUtil.fs.dirs.CacheDir}/credito-${creditId}.pdf`;
-  const response = await ReactNativeBlobUtil.config({ path, fileCache: true, overwrite: true }).fetch(
-    "GET",
-    `${config.apiBaseUrl}/api/v1/credits/${creditId}/pdf`,
-    { Authorization: `Bearer ${token}` },
-  );
-
-  if (response.respInfo.status < 200 || response.respInfo.status >= 300) {
-    throw new Error("No se pudo descargar el PDF del crédito.");
-  }
-
-  await Share.open({
-    url: `file://${response.path()}`,
-    type: "application/pdf",
-    failOnCancel: false,
-  });
+  await Linking.openURL(creditPdfUrl(creditId, token));
 }

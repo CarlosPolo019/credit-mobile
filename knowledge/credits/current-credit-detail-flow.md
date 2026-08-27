@@ -4,7 +4,7 @@
 - `active`
 
 ## Proposito
-- Ver el detalle completo de un credito, editarlo, eliminarlo, exportarlo a PDF y ver quien lo cambio.
+- Ver el detalle completo de un credito, editarlo, eliminarlo, verlo en PDF y ver quien lo cambio.
 
 ## Participantes
 - `pages/credit-list/CreditListPage.tsx` (la fila navega a `CreditDetail`)
@@ -44,14 +44,16 @@ sequenceDiagram
   Feature->>Backend: DELETE /credits/{id}
   Detail->>List: goBack()
 
-  User->>Detail: Exportar PDF
-  Detail->>Feature: downloadAndShareCreditPdf(id, token)
-  Feature->>Backend: GET /credits/{id}/pdf (Authorization: Bearer, via react-native-blob-util)
-  Feature->>Feature: react-native-share abre/comparte el archivo descargado
+  User->>Detail: Ver PDF
+  Detail->>Feature: openCreditPdf(id, token)
+  Feature->>Backend: Linking.openURL(GET /credits/{id}/pdf?token=...)
+  Backend-->>Backend: JwtAuthenticationFilter acepta el token por query param solo en esta ruta
+  Backend-->>Detail: navegador del sistema muestra el PDF (Content-Disposition: inline)
 ```
 
 ## Decisiones
-- El PDF se genera en el backend (OpenPDF), no en el dispositivo: evita una libreria nativa de render de PDF. `pdf.ts` solo descarga el binario (con el token, porque un link plano no puede llevar el header `Authorization`) y lo comparte.
+- El PDF se genera en el backend (OpenPDF), no en el dispositivo: evita una libreria nativa de render de PDF. `pdf.ts` no descarga nada al dispositivo: arma la URL (con el token como query param, porque un tab de navegador no puede mandar el header `Authorization`) y la abre con `Linking.openURL`. Content-Disposition es `inline`, asi el navegador lo renderiza en vez de forzar la descarga.
+- Se reemplazo el flujo anterior de descargar+compartir (`react-native-blob-util` + `react-native-share`) porque fallaba de forma intermitente en dispositivos reales ("Download Interrupted" segun la app elegida en el share sheet). Abrir la URL en el navegador es mas simple y evita esa capa entera.
 - `CreditForm.tsx` es un solo componente para crear y editar (`mode` prop), igual que `credit-web/pages/credits/CreditForm.jsx` — evita mantener dos formularios casi identicos.
 - El comercial nunca es editable, ni en el formulario ni en el backend (`PUT` lo ignora si viniera).
 - El historial de auditoria se recarga automaticamente al volver de `CreditEdit` (listener de `focus` en `CreditDetailPage`), no solo al montar.
@@ -59,11 +61,11 @@ sequenceDiagram
 
 ## Errores
 - Credito inexistente/inactivo: `ErrorMessage` de pagina completa con boton para volver.
-- Fallo al eliminar o exportar PDF: `Banner` de error en el detalle, no bloquea la pantalla.
-- Sesion sin token al exportar PDF: `downloadAndShareCreditPdf` lanza antes de llamar a la red.
+- Fallo al eliminar o abrir el PDF: `Banner` de error en el detalle, no bloquea la pantalla.
+- Sesion sin token al ver el PDF: `openCreditPdf` lanza antes de abrir el navegador.
 
 ## Validacion
 - `npm run typecheck`
 - `npm run lint`
 - `npm test`
-- Prueba manual en dispositivo: listar -> tocar un credito -> editar -> confirmar -> ver la entrada nueva en el historial -> exportar PDF (se abre el share sheet) -> eliminar (confirmar) -> vuelve al listado.
+- Prueba manual en dispositivo: listar -> tocar un credito -> editar -> confirmar -> ver la entrada nueva en el historial -> ver PDF (se abre el navegador con el certificado) -> eliminar (confirmar) -> vuelve al listado.
