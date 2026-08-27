@@ -1,4 +1,4 @@
-import type { Credit, CreditAuditEntry, CreditEstimate, CreditFilters, CreditListResponse, CreditPayload } from "@/entities/credit/types";
+import type { Client, Credit, CreditAuditEntry, CreditEstimate, CreditFilters, CreditListResponse, CreditPayload } from "@/entities/credit/types";
 import { normalizeDirection, normalizeSort } from "@/entities/credit/validation";
 import { api } from "@/shared/api/client";
 
@@ -48,4 +48,13 @@ export async function deleteCredit(id: string) {
 export async function getCreditAudit(id: string) {
   const response = await api.get(`/api/v1/credits/${id}/audit`);
   return response.data as CreditAuditEntry[];
+}
+
+/**
+ * All clients (document + name), used by the credit form's cédula
+ * autocomplete — same endpoint and dataset as credit-web's Clientes page.
+ */
+export async function listClients() {
+  const response = await api.get("/api/v1/clients");
+  return response.data as Client[];
 }

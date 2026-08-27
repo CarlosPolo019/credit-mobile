@@ -1,12 +1,14 @@
 import { CheckCircle2 } from "lucide-react-native";
-import { useRef, useState } from "react";
-import { View } from "react-native";
-import type { CreditEstimate, CreditPayload } from "@/entities/credit/types";
+import { useEffect, useRef, useState } from "react";
+import { Text, TouchableOpacity, View } from "react-native";
+import type { Client, CreditEstimate, CreditPayload } from "@/entities/credit/types";
 import { type CreditFormValues, validateCredit } from "@/entities/credit/validation";
-import { estimateCredit } from "@/features/credits/api";
+import { estimateCredit, listClients } from "@/features/credits/api";
 import { useNetworkStatus } from "@/shared/network/NetworkStatusContext";
 import { Banner, BottomSheetModal, type BottomSheetModalRef, Button, TextField, colors } from "@/shared/ui";
 import { CreditConfirmSheetContent } from "./CreditConfirmSheetContent";
+
+const MAX_SUGGESTIONS = 5;
 
 const emptyValues: CreditFormValues = {
   clientFirstName: "",
@@ -44,10 +46,68 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
   const [pendingCredit, setPendingCredit] = useState<CreditPayload | null>(null);
   const [estimate, setEstimate] = useState<CreditEstimate | null>(null);
   const [isEstimating, setIsEstimating] = useState(false);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null);
   const confirmSheetRef = useRef<BottomSheetModalRef>(null);
+
+  // Only the create flow benefits from the autocomplete — an existing
+  // credit's client is already identified, editing stays as-is.
+  useEffect(() => {
+    if (isEdit) return;
+    let cancelled = false;
+    listClients()
+      .then((items) => {
+        if (!cancelled) setClients(items ?? []);
+      })
+      .catch(() => {
+        // Non-fatal: the field just behaves as a plain text input.
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const suggestions =
+    !isEdit && !selectedClient && values.clientDocument.length > 0
+      ? clients.filter((client) => client.document.includes(values.clientDocument)).slice(0, MAX_SUGGESTIONS)
+      : [];
+
+  const selectClient = (client: Client) => {
+    setSelectedClient(client);
+    setValues((previous) => ({
+      ...previous,
+      clientDocument: client.document,
+      clientFirstName: client.firstName || "",
+      clientSecondName: client.secondName || "",
+      clientFirstSurname: client.firstSurname || "",
+      clientSecondSurname: client.secondSurname || "",
+    }));
+    setErrors((previous) => ({
+      ...previous,
+      clientDocument: "",
+      clientFirstName: "",
+      clientSecondName: "",
+      clientFirstSurname: "",
+      clientSecondSurname: "",
+    }));
+  };
 
   const setValue = (key: keyof CreditFormValues, value: string) => {
     const nextValue = key === "clientDocument" ? value.replace(/\D/g, "") : value;
+    if (key === "clientDocument" && selectedClient) {
+      setSelectedClient(null);
+      setValues((previous) => ({
+        ...previous,
+        clientDocument: nextValue,
+        clientFirstName: "",
+        clientSecondName: "",
+        clientFirstSurname: "",
+        clientSecondSurname: "",
+      }));
+      setErrors((previous) => ({ ...previous, clientDocument: "" }));
+      return;
+    }
     setValues((previous) => ({ ...previous, [key]: nextValue }));
     setErrors((previous) => ({ ...previous, [key]: "" }));
   };
@@ -91,6 +151,7 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
     if (!isEdit) {
       setValues(emptyValues);
       setErrors({});
+      setSelectedClient(null);
     }
   };
 
@@ -98,14 +159,45 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
     <>
       <View className="gap-4">
         <Banner message={error} />
-        <TextField label="Cédula o ID" value={values.clientDocument} onChangeText={(value) => setValue("clientDocument", value)} keyboardType="number-pad" error={errors.clientDocument} autoFocus={!isEdit} />
-        <View className="flex-row gap-3">
-          <TextField className="flex-1" label="Primer nombre" value={values.clientFirstName} onChangeText={(value) => setValue("clientFirstName", value)} error={errors.clientFirstName} />
-          <TextField className="flex-1" label="Segundo nombre" value={values.clientSecondName} onChangeText={(value) => setValue("clientSecondName", value)} error={errors.clientSecondName} />
+        <View className="gap-2">
+          <TextField
+            label="Cédula o ID"
+            value={values.clientDocument}
+            onChangeText={(value) => setValue("clientDocument", value)}
+            keyboardType="number-pad"
+            error={errors.clientDocument}
+            autoFocus={!isEdit}
+          />
+          {suggestions.length > 0 ? (
+            <View className="overflow-hidden rounded-lg border border-gray-200 dark:border-neutral-800">
+              {suggestions.map((client, index) => (
+                <TouchableOpacity
+                  key={client.document}
+                  onPress={() => selectClient(client)}
+                  activeOpacity={0.6}
+                  className={`bg-white px-3 py-3 dark:bg-neutral-950 ${
+                    index < suggestions.length - 1 ? "border-b border-gray-100 dark:border-neutral-900" : ""
+                  }`}
+                >
+                  <Text className="text-sm font-semibold text-gray-900 dark:text-neutral-50">{client.document}</Text>
+                  <Text className="text-sm text-gray-500 dark:text-neutral-400">{client.fullName}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          ) : null}
+          {!isEdit && selectedClient ? (
+            <Text className="text-xs text-gray-500 dark:text-neutral-400">
+              Cliente encontrado — el nombre se completó solo.
+            </Text>
+          ) : null}
         </View>
         <View className="flex-row gap-3">
-          <TextField className="flex-1" label="Primer apellido" value={values.clientFirstSurname} onChangeText={(value) => setValue("clientFirstSurname", value)} error={errors.clientFirstSurname} />
-          <TextField className="flex-1" label="Segundo apellido" value={values.clientSecondSurname} onChangeText={(value) => setValue("clientSecondSurname", value)} error={errors.clientSecondSurname} />
+          <TextField className="flex-1" label="Primer nombre" value={values.clientFirstName} onChangeText={(value) => setValue("clientFirstName", value)} error={errors.clientFirstName} editable={!selectedClient} />
+          <TextField className="flex-1" label="Segundo nombre" value={values.clientSecondName} onChangeText={(value) => setValue("clientSecondName", value)} error={errors.clientSecondName} editable={!selectedClient} />
+        </View>
+        <View className="flex-row gap-3">
+          <TextField className="flex-1" label="Primer apellido" value={values.clientFirstSurname} onChangeText={(value) => setValue("clientFirstSurname", value)} error={errors.clientFirstSurname} editable={!selectedClient} />
+          <TextField className="flex-1" label="Segundo apellido" value={values.clientSecondSurname} onChangeText={(value) => setValue("clientSecondSurname", value)} error={errors.clientSecondSurname} editable={!selectedClient} />
         </View>
         <TextField label="Valor del crédito" value={values.amount} onChangeText={(value) => setValue("amount", value)} keyboardType="numeric" error={errors.amount} />
         <View className="flex-row gap-3">

@@ -67,3 +67,12 @@ export type CreditEstimate = {
   monthlyPayment: number;
   totalToPay: number;
 };
+
+export type Client = {
+  document: string;
+  firstName: string;
+  secondName: string;
+  firstSurname: string;
+  secondSurname: string;
+  fullName: string;
+};
