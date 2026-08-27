@@ -166,20 +166,15 @@ El lifecycle de npm escribe `src/shared/config/generated.env.ts` antes de los co
 
 ## Funcionalidades
 
-- Login con `{ username, password }` + JWT (`username` puede ser la cédula o el usuario demo), token guardado en Keychain.
-- Navegación por pestañas flotantes (bottom tabs, `src/app/MainTabs.tsx` + `FloatingTabBar.tsx`, tabBar 100% custom, no la barra nativa): `ADMIN` ve 5 tabs (Home, Créditos, **Registrar** — botón central elevado, destacado sobre los demás —, Correos, Perfil); un `USER` normal ve solo 3 (Créditos, Registrar, Perfil), sin Home (que solo tenía accesos de admin) ni Correos.
-- Registrar crédito con un paso de confirmación (cuota mensual/total estimados) antes de enviar; límites de monto ($200.000.000 máx.), tasa (0.5%–3.5% mensual) y plazo (1–60 meses) validados en el formulario, con el mismo criterio que `credit-web` y el backend.
-- Consultar créditos activos: filtrar por cliente, documento, comercial (select); ordenar por fecha o monto; paginado (6 por página).
-- Cédula con autocomplete al registrar: si ya existe, el nombre se completa solo y queda de solo lectura.
-- Detalle de crédito: ver, editar, eliminar, historial de auditoría (quién cambió qué) y ver el PDF del crédito (generado en el servidor, se abre directo en el navegador del dispositivo).
-- Pantalla de "despertando el servidor": antes de Login, si el backend (Render free tier) está dormido, la app hace polling a `/actuator/health` con mensajes de espera en vez de mostrar un error de conexión confuso. Con sesión ya iniciada no bloquea nada — ver [Offline](#offline).
-- Sin auto-registro: las cuentas se crean solo desde `credit-web` (`/users`, admin-only) — no hay pantalla de registro público en la app.
-- Clientes y Dashboard: solo para `role: "ADMIN"` (hoy, Carlos Escorcia) — accesos extra en el tab Home (no tienen tab propio). Clientes paginado (6 por página); el dato es el mismo que usa el autocomplete, sin restricción de rol en el backend, solo la pantalla es de admin.
-- Correos: solo para `role: "ADMIN"` — a diferencia de Clientes/Dashboard, sí tiene su propio tab (el 5to). El backend también lo exige (403 para cualquier otra cuenta). Paginado (6 por página).
-- Dashboard: resumen de créditos por comercial, monto total solicitado, ganancia estimada, tasa de interés promedio y correos por estado, calculado en el cliente a partir de los mismos datos de Créditos y Correos (sin endpoint propio) — equivalente móvil del Dashboard de `credit-web`.
-- Modo oscuro: toda la UI (NativeWind `dark:` variants) sigue el tema del sistema operativo automáticamente, sin selector manual — colores de marca, tarjetas, texto y el tab bar flotante tienen su contraparte oscura.
-- Splash screen animado con marca e ícono de la app.
-- Manejo de sesión expirada.
+- Login con `{ username, password }` + JWT (cédula o usuario demo), token en Keychain. Sin auto-registro: las cuentas se crean solo desde `credit-web` (`/users`, admin-only).
+- Navegación por pestañas flotantes 100% custom (`src/app/MainTabs.tsx` + `FloatingTabBar.tsx`, no la barra nativa): `ADMIN` ve 5 tabs (Home, Créditos, **Registrar** — botón central elevado —, Correos, Perfil); `USER` ve 3 (Créditos, Registrar, Perfil), sin Home ni Correos.
+- Registrar crédito con confirmación (cuota/total estimados) y los mismos límites que `credit-web`/backend: monto hasta $200.000.000, tasa 0.5%–3.5% mensual, plazo 1–60 meses.
+- Consultar créditos activos: filtrar por cliente, documento, comercial; ordenar por fecha o monto; paginado (6 por página). Cédula con autocomplete: si ya existe, el nombre se completa solo y queda de solo lectura.
+- Detalle de crédito: ver, editar, eliminar, historial de auditoría y ver el PDF (generado en el servidor, abre en el navegador del dispositivo).
+- Clientes y Dashboard (solo `ADMIN`): accesos desde el tab Home, sin tab propio; Clientes paginado, Dashboard resume créditos por comercial/montos/correos calculado en el cliente — equivalente móvil del Dashboard de `credit-web`.
+- Correos (solo `ADMIN`): a diferencia de Clientes/Dashboard, sí tiene tab propio (el 5to); el backend también lo exige (403 para otra cuenta). Paginado.
+- Modo oscuro automático (NativeWind `dark:`, sigue el tema del sistema), splash animado, y manejo de sesión expirada.
+- Pantalla de "despertando el servidor" (Render free tier) antes de Login — con sesión iniciada no bloquea nada, ver [Offline](#offline).
 
 ## Offline
 
