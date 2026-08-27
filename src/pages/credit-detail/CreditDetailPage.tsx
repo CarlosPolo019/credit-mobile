@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View, useColorScheme } from "react-native";
 import type { RootStackParamList } from "@/app/AppRouter";
 import { formatCurrency, formatDate } from "@/entities/credit/format";
-import { estimateCreditPayment } from "@/entities/credit/payment";
 import type { Credit, CreditAuditEntry } from "@/entities/credit/types";
 import { useSession } from "@/entities/session/SessionContext";
 import { deleteCredit, getCredit, getCreditAudit } from "@/features/credits/api";
@@ -133,7 +132,8 @@ export function CreditDetailPage({ navigation, route }: CreditDetailPageProps) {
 
   if (!credit) return null;
 
-  const { monthlyPayment, totalToPay } = estimateCreditPayment(credit);
+  const monthlyPayment = credit.estimatedMonthlyPayment ?? 0;
+  const totalToPay = credit.estimatedTotalToPay ?? 0;
 
   return (
     <>

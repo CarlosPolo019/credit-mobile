@@ -1,11 +1,12 @@
 import { Text, View } from "react-native";
-import { estimateCreditPayment } from "@/entities/credit/payment";
 import type { CreditPayload } from "@/entities/credit/types";
 import { formatCurrency } from "@/entities/credit/format";
 import { Button } from "@/shared/ui";
 
 type CreditConfirmSheetContentProps = {
   credit: CreditPayload;
+  monthlyPayment: number;
+  totalToPay: number;
   salespersonLabel: string;
   onCancel: () => void;
   onConfirm: () => void;
@@ -29,12 +30,11 @@ function SummaryRow({ label, value, emphasis }: { label: string; value: string; 
  * instead of after the client has already been notified by email. Mirrors
  * `credit-web/pages/credits/CreditConfirmDialog.jsx`.
  */
-export function CreditConfirmSheetContent({ credit, salespersonLabel, onCancel, onConfirm, isSubmitting, mode = "create" }: CreditConfirmSheetContentProps) {
+export function CreditConfirmSheetContent({ credit, monthlyPayment, totalToPay, salespersonLabel, onCancel, onConfirm, isSubmitting, mode = "create" }: CreditConfirmSheetContentProps) {
   const isEdit = mode === "edit";
   const fullName = [credit.clientFirstName, credit.clientSecondName, credit.clientFirstSurname, credit.clientSecondSurname]
     .filter(Boolean)
     .join(" ");
-  const { monthlyPayment, totalToPay } = estimateCreditPayment(credit);
 
   return (
     <View className="flex-1 bg-white px-6 dark:bg-neutral-950">

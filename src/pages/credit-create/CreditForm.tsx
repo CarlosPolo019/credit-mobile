@@ -1,8 +1,9 @@
 import { CheckCircle2 } from "lucide-react-native";
 import { useRef, useState } from "react";
 import { View } from "react-native";
-import type { CreditPayload } from "@/entities/credit/types";
+import type { CreditEstimate, CreditPayload } from "@/entities/credit/types";
 import { type CreditFormValues, validateCredit } from "@/entities/credit/validation";
+import { estimateCredit } from "@/features/credits/api";
 import { Banner, BottomSheetModal, type BottomSheetModalRef, Button, TextField, colors } from "@/shared/ui";
 import { CreditConfirmSheetContent } from "./CreditConfirmSheetContent";
 
@@ -39,6 +40,8 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
   // Holds the validated payload while the operator reviews the confirmation
   // sheet; null means "no confirmation pending", not "empty form".
   const [pendingCredit, setPendingCredit] = useState<CreditPayload | null>(null);
+  const [estimate, setEstimate] = useState<CreditEstimate | null>(null);
+  const [isEstimating, setIsEstimating] = useState(false);
   const confirmSheetRef = useRef<BottomSheetModalRef>(null);
 
   const setValue = (key: keyof CreditFormValues, value: string) => {
@@ -47,15 +50,24 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
     setErrors((previous) => ({ ...previous, [key]: "" }));
   };
 
-  const review = () => {
+  const review = async () => {
     const validation = validateCredit(values);
     if (!validation.isValid) {
       setErrors(validation.errors);
       return;
     }
     setError("");
-    setPendingCredit(validation.value);
-    confirmSheetRef.current?.present();
+    setIsEstimating(true);
+    try {
+      const response = await estimateCredit(validation.value);
+      setEstimate(response);
+      setPendingCredit(validation.value);
+      confirmSheetRef.current?.present();
+    } catch {
+      setError("No se pudo calcular la cuota estimada.");
+    } finally {
+      setIsEstimating(false);
+    }
   };
 
   const confirm = async () => {
@@ -95,15 +107,18 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
         <Button
           title={isEdit ? "Guardar cambios" : "Registrar crédito"}
           onPress={review}
+          loading={isEstimating}
           icon={<CheckCircle2 color={colors.ink} size={18} />}
           className="mt-2"
         />
       </View>
 
       <BottomSheetModal ref={confirmSheetRef}>
-        {pendingCredit ? (
+        {pendingCredit && estimate ? (
           <CreditConfirmSheetContent
             credit={pendingCredit}
+            monthlyPayment={estimate.monthlyPayment}
+            totalToPay={estimate.totalToPay}
             salespersonLabel={salespersonLabel}
             mode={mode}
             onCancel={() => confirmSheetRef.current?.dismiss()}

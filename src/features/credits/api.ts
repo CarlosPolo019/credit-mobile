@@ -1,10 +1,21 @@
-import type { Credit, CreditAuditEntry, CreditFilters, CreditListResponse, CreditPayload } from "@/entities/credit/types";
+import type { Credit, CreditAuditEntry, CreditEstimate, CreditFilters, CreditListResponse, CreditPayload } from "@/entities/credit/types";
 import { normalizeDirection, normalizeSort } from "@/entities/credit/validation";
 import { api } from "@/shared/api/client";
 
 export async function createCredit(payload: CreditPayload) {
   const response = await api.post("/api/v1/credits", payload);
   return response.data;
+}
+
+/**
+ * Estimated monthly installment/total payoff, computed by the backend
+ * (same formula it uses for Credit.estimatedMonthlyPayment/estimatedTotalToPay
+ * and the PDF export) without saving anything — used for the pre-submission
+ * confirmation sheet, matching credit-web instead of recomputing locally.
+ */
+export async function estimateCredit(payload: Pick<CreditPayload, "amount" | "interestRate" | "termMonths">) {
+  const response = await api.post("/api/v1/credits/estimate", payload);
+  return response.data as CreditEstimate;
 }
 
 export async function listCredits(filters: CreditFilters) {

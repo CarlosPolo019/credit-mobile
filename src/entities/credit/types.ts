@@ -16,6 +16,8 @@ export type Credit = {
   createdAt?: string;
   updatedAt?: string;
   deletedAt?: string | null;
+  estimatedMonthlyPayment?: number | string;
+  estimatedTotalToPay?: number | string;
 };
 
 export type CreditSortBy = "createdAt" | "amount";
@@ -59,4 +61,9 @@ export type CreditAuditEntry = {
   changedByName?: string;
   changedAt: string;
   changes: Record<string, CreditFieldChange>;
+};
+
+export type CreditEstimate = {
+  monthlyPayment: number;
+  totalToPay: number;
 };
