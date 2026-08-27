@@ -3,7 +3,7 @@ import { ArrowLeft, Crown, ListChecks, Percent, TrendingUp, Wallet } from "lucid
 import type { ReactNode } from "react";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View, useColorScheme } from "react-native";
-import type { RootStackParamList } from "@/app/AppRouter";
+import type { RootStackParamList } from "@/app/navigation";
 import { formatCurrency } from "@/entities/credit/format";
 import type { Credit } from "@/entities/credit/types";
 import type { EmailJob, EmailJobStatus } from "@/entities/email-job/types";
@@ -63,7 +63,7 @@ export function DashboardPage({ navigation }: DashboardPageProps) {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    if (!isAdmin) navigation.replace("Home");
+    if (!isAdmin) navigation.goBack();
   }, [isAdmin, navigation]);
 
   useEffect(() => {

@@ -1,15 +1,14 @@
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ArrowLeft, ChevronLeft, ChevronRight, Search } from "lucide-react-native";
+import { ChevronLeft, ChevronRight, Search } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, ScrollView, Text, TextInput, TouchableOpacity, View, useColorScheme } from "react-native";
-import type { RootStackParamList } from "@/app/AppRouter";
+import type { TabScreenProps } from "@/app/navigation";
 import { formatCurrency, formatDate } from "@/entities/credit/format";
 import type { EmailJob, EmailJobFilters, EmailJobStatus } from "@/entities/email-job/types";
 import { useSession } from "@/entities/session/SessionContext";
 import { listEmailJobs } from "@/features/email-jobs/api";
 import { ErrorMessage, PersonChip, Screen, SectionFooterMessage, colors } from "@/shared/ui";
 
-type EmailJobListPageProps = NativeStackScreenProps<RootStackParamList, "EmailJobList">;
+type EmailJobListPageProps = TabScreenProps<"EmailJobList">;
 
 const PAGE_SIZE = 6;
 const SEARCH_DEBOUNCE_MS = 400;
@@ -39,9 +38,10 @@ const STATUS_STYLES: Record<EmailJobStatus, { bg: string; text: string; label: s
 };
 
 /**
- * Admin-only, same rule as credit-web's /email-jobs: hidden from Home and,
- * as a second line of defense, redirects back if reached without the role
- * — the backend also 403s the endpoint for a non-ADMIN token either way.
+ * Admin-only 5th tab (MainTabs.tsx only mounts it for an ADMIN session),
+ * same rule as credit-web's /email-jobs. The role check here is a second
+ * line of defense in case of a stale render during logout/role change —
+ * the backend also 403s the endpoint for a non-ADMIN token either way.
  */
 export function EmailJobListPage({ navigation }: EmailJobListPageProps) {
   const isDarkMode = useColorScheme() === "dark";
@@ -55,7 +55,7 @@ export function EmailJobListPage({ navigation }: EmailJobListPageProps) {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    if (!isAdmin) navigation.replace("Home");
+    if (!isAdmin) navigation.navigate("Home");
   }, [isAdmin, navigation]);
 
   useEffect(() => {
@@ -99,16 +99,10 @@ export function EmailJobListPage({ navigation }: EmailJobListPageProps) {
   if (!isAdmin) return null;
 
   return (
-    <Screen scroll={false} contentClassName="pt-2">
-      <View className="relative my-2 flex justify-center py-4">
-        <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.6} className="absolute -left-3 z-10 p-3">
-          <ArrowLeft color={isDarkMode ? colors.brand400 : colors.brand700} size={24} />
-        </TouchableOpacity>
-        <Text className="text-center font-semibold text-gray-800 dark:text-neutral-50">Correos</Text>
-      </View>
-
+    <Screen scroll={false} contentClassName="pt-6 pb-28">
       <View className="pb-4">
-        <Text className="text-2xl font-bold text-gray-900 dark:text-neutral-50">Estado de envíos</Text>
+        <Text className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-neutral-400">Correos</Text>
+        <Text className="mt-1 text-2xl font-bold text-gray-900 dark:text-neutral-50">Estado de envíos</Text>
       </View>
 
       <View className="pb-3">
@@ -124,7 +118,7 @@ export function EmailJobListPage({ navigation }: EmailJobListPageProps) {
         </View>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4 flex-row" contentContainerClassName="gap-2">
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4 h-10 flex-none" contentContainerClassName="items-center gap-2">
         {STATUS_OPTIONS.map((option) => {
           const active = filters.status === option.value;
           return (
@@ -167,7 +161,7 @@ export function EmailJobListPage({ navigation }: EmailJobListPageProps) {
       )}
 
       {pageCount > 1 ? (
-        <View className="flex-row items-center justify-between border-t border-gray-200 py-3 dark:border-neutral-800">
+        <View className="flex-row items-center justify-between border-t border-gray-200 py-3 pb-24 dark:border-neutral-800">
           <TouchableOpacity
             onPress={() => setPage((previous) => Math.max(1, previous - 1))}
             disabled={clampedPage <= 1}

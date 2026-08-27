@@ -2,7 +2,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ArrowLeft } from "lucide-react-native";
 import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, View, useColorScheme } from "react-native";
-import type { RootStackParamList } from "@/app/AppRouter";
+import type { RootStackParamList } from "@/app/navigation";
 import type { CreditFormValues } from "@/entities/credit/validation";
 import type { CreditPayload } from "@/entities/credit/types";
 import { getCredit, updateCredit } from "@/features/credits/api";

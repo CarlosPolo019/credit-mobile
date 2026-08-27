@@ -1,31 +1,39 @@
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
 import { useSession } from "@/entities/session/SessionContext";
 import { ClientListPage } from "@/pages/client-list/ClientListPage";
-import { CreditCreatePage } from "@/pages/credit-create/CreditCreatePage";
 import { CreditDetailPage } from "@/pages/credit-detail/CreditDetailPage";
 import { CreditEditPage } from "@/pages/credit-detail/CreditEditPage";
-import { CreditListPage } from "@/pages/credit-list/CreditListPage";
 import { DashboardPage } from "@/pages/dashboard/DashboardPage";
-import { EmailJobListPage } from "@/pages/email-job-list/EmailJobListPage";
-import { HomePage } from "@/pages/home/HomePage";
 import { LoginPage } from "@/pages/login/LoginPage";
+import { syncQueuedCredits } from "@/features/credits/offlineSync";
+import { useNetworkStatus } from "@/shared/network/NetworkStatusContext";
 import { colors, OfflineBanner } from "@/shared/ui";
 import { BackendWakeGate } from "./BackendWakeGate";
-
-export type RootStackParamList = {
-  Login: undefined;
-  Home: undefined;
-  CreditCreate: undefined;
-  CreditList: undefined;
-  CreditDetail: { creditId: string };
-  CreditEdit: { creditId: string };
-  ClientList: undefined;
-  EmailJobList: undefined;
-  Dashboard: undefined;
-};
+import { MainTabs } from "./MainTabs";
+import type { RootStackParamList } from "./navigation";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+/**
+ * Headless: fires the offline-credit-queue sync whenever connectivity comes
+ * back. Lives here (top of the authenticated tree, always mounted for the
+ * whole session) instead of inside a specific tab screen — Home used to own
+ * this, but tabs stay mounted only once visited, so a user who never opens
+ * a given tab would never get this effect if it lived there.
+ */
+function AutoSyncOnReconnect() {
+  const { isOnline } = useNetworkStatus();
+
+  useEffect(() => {
+    if (isOnline) {
+      syncQueuedCredits();
+    }
+  }, [isOnline]);
+
+  return null;
+}
 
 export function AppRouter() {
   const { isAuthenticated, isRestoring } = useSession();
@@ -41,6 +49,7 @@ export function AppRouter() {
   const navigator = (
     <View className="flex-1">
       <OfflineBanner />
+      {isAuthenticated ? <AutoSyncOnReconnect /> : null}
       <Stack.Navigator
         screenOptions={{
           headerShown: false,
@@ -49,13 +58,10 @@ export function AppRouter() {
       >
         {isAuthenticated ? (
           <>
-            <Stack.Screen name="Home" component={HomePage} options={{ title: "Créditos" }} />
-            <Stack.Screen name="CreditCreate" component={CreditCreatePage} options={{ title: "Registrar crédito" }} />
-            <Stack.Screen name="CreditList" component={CreditListPage} options={{ title: "Consultar créditos" }} />
+            <Stack.Screen name="MainTabs" component={MainTabs} />
             <Stack.Screen name="CreditDetail" component={CreditDetailPage} options={{ title: "Detalle de crédito" }} />
             <Stack.Screen name="CreditEdit" component={CreditEditPage} options={{ title: "Editar crédito" }} />
             <Stack.Screen name="ClientList" component={ClientListPage} options={{ title: "Clientes" }} />
-            <Stack.Screen name="EmailJobList" component={EmailJobListPage} options={{ title: "Correos" }} />
             <Stack.Screen name="Dashboard" component={DashboardPage} options={{ title: "Dashboard" }} />
           </>
         ) : (

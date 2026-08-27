@@ -1,5 +1,4 @@
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ArrowLeft, ChevronLeft, ChevronRight, CreditCard, Search, SlidersVertical } from "lucide-react-native";
+import { ChevronLeft, ChevronRight, CreditCard, Search, SlidersVertical } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -12,7 +11,7 @@ import {
   View,
   useColorScheme,
 } from "react-native";
-import type { RootStackParamList } from "@/app/AppRouter";
+import type { TabScreenProps } from "@/app/navigation";
 import { formatCurrency, formatDate } from "@/entities/credit/format";
 import type { Credit, CreditFilters } from "@/entities/credit/types";
 import { listCredits } from "@/features/credits/api";
@@ -26,7 +25,7 @@ import {
 } from "@/shared/ui";
 import { CreditFiltersSheetContent } from "./CreditFiltersSheetContent";
 
-type CreditListPageProps = NativeStackScreenProps<RootStackParamList, "CreditList">;
+type CreditListPageProps = TabScreenProps<"CreditList">;
 
 const SEARCH_DEBOUNCE_MS = 400;
 const PAGE_SIZE = 6;
@@ -125,15 +124,9 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
 
   return (
     <View className="flex-1 bg-white px-6 dark:bg-neutral-950">
-      <View className="relative my-2 flex justify-center py-4">
-        <TouchableOpacity onPress={() => navigation.goBack()} activeOpacity={0.6} className="absolute -left-3 z-10 p-3">
-          <ArrowLeft color={isDarkMode ? colors.brand400 : colors.brand700} size={24} />
-        </TouchableOpacity>
-        <Text className="text-center font-semibold text-gray-800 dark:text-neutral-50">Consulta</Text>
-      </View>
-
-      <View className="pb-4">
-        <Text className="text-2xl font-bold text-gray-900 dark:text-neutral-50">Créditos</Text>
+      <View className="pb-2 pt-6">
+        <Text className="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-neutral-400">Consulta</Text>
+        <Text className="mt-1 text-2xl font-bold text-gray-900 dark:text-neutral-50">Créditos</Text>
       </View>
 
       <View className="pb-4">
@@ -181,7 +174,7 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
       )}
 
       {!isInitialLoad && !error && pageCount > 1 ? (
-        <View className="flex-row items-center justify-between border-t border-gray-200 py-3 dark:border-neutral-800">
+        <View className="flex-row items-center justify-between border-t border-gray-200 py-3 pb-24 dark:border-neutral-800">
           <TouchableOpacity
             onPress={() => setPage((previous) => Math.max(1, previous - 1))}
             disabled={clampedPage <= 1}
@@ -226,7 +219,9 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
 
 const styles = StyleSheet.create({
   listContent: {
-    paddingBottom: 24,
+    // Extra clearance so the last row isn't hidden behind the floating tab
+    // bar when there's no pagination row underneath to already provide it.
+    paddingBottom: 112,
   },
 });
 

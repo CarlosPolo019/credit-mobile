@@ -2,7 +2,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ArrowLeft, ChevronLeft, ChevronRight, Search } from "lucide-react-native";
 import { useEffect, useMemo, useState } from "react";
 import { ActivityIndicator, Text, TextInput, TouchableOpacity, View, useColorScheme } from "react-native";
-import type { RootStackParamList } from "@/app/AppRouter";
+import type { RootStackParamList } from "@/app/navigation";
 import type { Client } from "@/entities/credit/types";
 import { useSession } from "@/entities/session/SessionContext";
 import { listClients } from "@/features/credits/api";
@@ -28,7 +28,7 @@ export function ClientListPage({ navigation }: ClientListPageProps) {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    if (!isAdmin) navigation.replace("Home");
+    if (!isAdmin) navigation.goBack();
   }, [isAdmin, navigation]);
 
   useEffect(() => {

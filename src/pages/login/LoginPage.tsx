@@ -1,7 +1,7 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useState } from "react";
 import { Image, KeyboardAvoidingView, Platform, Text, View } from "react-native";
-import type { RootStackParamList } from "@/app/AppRouter";
+import type { RootStackParamList } from "@/app/navigation";
 import { useSession } from "@/entities/session/SessionContext";
 import { Banner, Button, Screen, TextField } from "@/shared/ui";
 

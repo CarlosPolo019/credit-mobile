@@ -6,7 +6,9 @@
     "prestart": "node scripts/write-mobile-config.js",
     "android": "react-native run-android",
     "preandroid": "node scripts/write-mobile-config.js && node scripts/ensure-android-debug-keystore.js",
+    "android:device": "CREDIT_API_BASE_URL=https://fyatest-api.cmescorcia.com npm run android",
     "start": "react-native start",
+    "start:device": "CREDIT_API_BASE_URL=https://fyatest-api.cmescorcia.com npm start",
     "pretest": "node scripts/write-mobile-config.js",
     "test": "jest",
     "prelint": "node scripts/write-mobile-config.js",
@@ -21,6 +23,7 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/netinfo": "^11.5.2",
+    "@react-navigation/bottom-tabs": "^7.18.18",
     "@react-navigation/native": "^7.1.26",
     "@react-navigation/native-stack": "^7.9.0",
     "axios": "^1.13.2",
