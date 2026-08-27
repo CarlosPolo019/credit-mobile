@@ -11,6 +11,7 @@ App Android (React Native) para la prueba técnica de créditos de Fya Social Ca
 - [Instalación Paso A Paso](#instalación-paso-a-paso)
 - [Configurar La URL Del Backend](#configurar-la-url-del-backend)
 - [Funcionalidades](#funcionalidades)
+- [Offline](#offline)
 - [Capturas](#capturas)
 - [Compilar APK](#compilar-apk)
 - [Compilar AAB](#compilar-aab)
@@ -66,7 +67,7 @@ sequenceDiagram
   Sheet-->>User: sheet se cierra, formulario se limpia
 ```
 
-Sin internet, el registro sigue funcionando: se salta la estimación y el crédito se guarda en una cola local que se sincroniza sola al volver la conexión — ver [`knowledge/credits/current-credit-offline-queue-flow.md`](knowledge/credits/current-credit-offline-queue-flow.md).
+Sin internet, el registro sigue funcionando: se salta la estimación y el crédito se guarda en una cola local que se sincroniza sola al volver la conexión — ver [Offline](#offline).
 
 ## Stack
 
@@ -141,16 +142,13 @@ El lifecycle de npm escribe `src/shared/config/generated.env.ts` antes de los co
 
 ## Funcionalidades
 
-- Login con `{ username, password }` + JWT (`username` puede ser la cédula o el usuario demo).
-- Registro de cuenta con documento numérico y contraseña.
-- Token guardado en Keychain.
+- Login con `{ username, password }` + JWT (`username` puede ser la cédula o el usuario demo), token guardado en Keychain.
 - Navegación por pestañas flotantes (bottom tabs, `src/app/MainTabs.tsx` + `FloatingTabBar.tsx`, tabBar 100% custom, no la barra nativa): `ADMIN` ve 5 tabs (Home, Créditos, **Registrar** — botón central elevado, destacado sobre los demás —, Correos, Perfil); un `USER` normal ve solo 3 (Créditos, Registrar, Perfil), sin Home (que solo tenía accesos de admin) ni Correos.
 - Registrar crédito con un paso de confirmación (cuota mensual/total estimados) antes de enviar; límites de monto ($200.000.000 máx.), tasa (0.5%–3.5% mensual) y plazo (1–60 meses) validados en el formulario, con el mismo criterio que `credit-web` y el backend.
 - Consultar créditos activos: filtrar por cliente, documento, comercial (select); ordenar por fecha o monto; paginado (6 por página).
 - Cédula con autocomplete al registrar: si ya existe, el nombre se completa solo y queda de solo lectura.
 - Detalle de crédito: ver, editar, eliminar, historial de auditoría (quién cambió qué) y ver el PDF del crédito (generado en el servidor, se abre directo en el navegador del dispositivo).
-- Creación de créditos offline: funciona sin internet guardando en cola local y sincronizando automáticamente (o manualmente, desde el tab de Perfil) al recuperar la conexión; editar/eliminar/PDF/login siguen requiriendo internet.
-- Pantalla de "despertando el servidor": antes de Login, si el backend (Render free tier) está dormido, la app hace polling a `/actuator/health` con mensajes de espera en vez de mostrar un error de conexión confuso. Con sesión ya iniciada no bloquea nada — la cola offline permite seguir registrando créditos sin esperar al backend.
+- Pantalla de "despertando el servidor": antes de Login, si el backend (Render free tier) está dormido, la app hace polling a `/actuator/health` con mensajes de espera en vez de mostrar un error de conexión confuso. Con sesión ya iniciada no bloquea nada — ver [Offline](#offline).
 - Sin auto-registro: las cuentas se crean solo desde `credit-web` (`/users`, admin-only) — no hay pantalla de registro público en la app.
 - Clientes y Dashboard: solo para `role: "ADMIN"` (hoy, Carlos Escorcia) — accesos extra en el tab Home (no tienen tab propio). Clientes paginado (6 por página); el dato es el mismo que usa el autocomplete, sin restricción de rol en el backend, solo la pantalla es de admin.
 - Correos: solo para `role: "ADMIN"` — a diferencia de Clientes/Dashboard, sí tiene su propio tab (el 5to). El backend también lo exige (403 para cualquier otra cuenta). Paginado (6 por página).
@@ -158,6 +156,17 @@ El lifecycle de npm escribe `src/shared/config/generated.env.ts` antes de los co
 - Modo oscuro: toda la UI (NativeWind `dark:` variants) sigue el tema del sistema operativo automáticamente, sin selector manual — colores de marca, tarjetas, texto y el tab bar flotante tienen su contraparte oscura.
 - Splash screen animado con marca e ícono de la app.
 - Manejo de sesión expirada.
+
+## Offline
+
+El comercial en campo no siempre tiene señal — registrar un crédito es la única operación pensada para funcionar sin internet, con sincronización automática al recuperar la conexión. El resto de la app (consultar, editar, eliminar, ver PDF, login) requiere conexión, con un mensaje claro en vez de un error genérico cuando falta.
+
+- **Detección de conectividad**: `shared/network/NetworkStatusContext.tsx` (`@react-native-community/netinfo`) expone `isOnline` de forma global; un `OfflineBanner` visible en todas las pantallas avisa cuando no hay señal.
+- **Registrar sin conexión**: `CreditForm` salta el paso de estimar la cuota (requiere backend) y guarda el crédito en una cola local (`AsyncStorage`, `features/credits/offlineQueue.ts`) en vez de llamar a la API — el operador ve confirmación inmediata ("Crédito guardado offline. Se sincronizará cuando vuelva internet.").
+- **Sincronización automática**: al recuperar la conexión, `AutoSyncOnReconnect` (montado en `src/app/AppRouter.tsx`, corre sin importar qué pestaña esté abierta) dispara `syncQueuedCredits()`, que reintenta cada item de la cola contra `POST /api/v1/credits`. Los que fallan quedan marcados `failed` y se reintentan en la próxima sincronización.
+- **Sincronización manual**: desde el tab **Perfil**, un contador de créditos pendientes/fallidos y un botón "Sincronizar" (solo visible con internet).
+- **Cold start del backend**: como el backend gratuito (Render) se duerme tras inactividad, `BackendWakeGate` hace polling a `/actuator/health` con una pantalla animada de espera antes de dejar entrar al login — pero solo bloquea el flujo **sin sesión**; con sesión ya iniciada la app nunca espera al backend, justamente para que la cola offline sirva de algo aunque el servidor esté dormido.
+- Detalle completo, diagrama de secuencia y casos borde: [`knowledge/credits/current-credit-offline-queue-flow.md`](knowledge/credits/current-credit-offline-queue-flow.md).
 
 ## Capturas
 
