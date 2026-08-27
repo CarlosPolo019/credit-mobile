@@ -21,7 +21,7 @@ flowchart LR
   api --> firestore[("Cloud Firestore")]
 ```
 
-### Registrar crédito (con confirmación)
+### Registrar crédito (con confirmación, online)
 
 ```mermaid
 sequenceDiagram
@@ -40,6 +40,8 @@ sequenceDiagram
   Sheet-->>User: sheet se cierra, formulario se limpia
 ```
 
+Sin internet, el registro sigue funcionando: se salta la estimación y el crédito se guarda en una cola local que se sincroniza sola al volver la conexión — ver [`knowledge/credits/current-credit-offline-queue-flow.md`](knowledge/credits/current-credit-offline-queue-flow.md).
+
 ## Stack
 
 | Layer | Tech |
@@ -51,6 +53,7 @@ sequenceDiagram
 | Icons | lucide-react-native |
 | Session | react-native-keychain |
 | PDF export | react-native-blob-util (authenticated download) + react-native-share (open/share) — the PDF itself is rendered server-side by `credit-backend` |
+| Offline | @react-native-community/netinfo (connectivity detection) + @react-native-async-storage/async-storage (local credit queue) |
 
 ## Feature-Sliced Structure
 
@@ -116,6 +119,7 @@ The npm lifecycle writes `src/shared/config/generated.env.ts` before Android bui
 - Register credit with a confirmation step (estimated monthly installment/total) before submitting.
 - Query active credits: filter by client, document, salesperson (select); sort by date or amount.
 - Credit detail: view, edit, delete, audit history (who changed what), and export as a server-rendered PDF.
+- Offline credit creation: works without internet by queueing locally and syncing automatically (or manually, from the profile sheet) once connectivity returns; editing/deleting/PDF/login/register still require internet.
 - Animated branded splash screen and app icon.
 - Session-expired handling.
 
@@ -183,4 +187,5 @@ npm test
 | [`knowledge/credits/current-credit-registration-flow.md`](knowledge/credits/current-credit-registration-flow.md) | Credit registration + confirmation |
 | [`knowledge/credits/current-credit-query-flow.md`](knowledge/credits/current-credit-query-flow.md) | Credit query/filters |
 | [`knowledge/credits/current-credit-detail-flow.md`](knowledge/credits/current-credit-detail-flow.md) | Credit detail: view, edit, delete, audit history, PDF export |
+| [`knowledge/credits/current-credit-offline-queue-flow.md`](knowledge/credits/current-credit-offline-queue-flow.md) | Offline credit creation, local queue, sync |
 | [`knowledge/android/current-android-build-and-signing-flow.md`](knowledge/android/current-android-build-and-signing-flow.md) | Build and signing |

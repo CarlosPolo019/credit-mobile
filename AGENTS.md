@@ -14,6 +14,7 @@ Guia operativa para agentes que trabajen en `credit-mobile`.
 - Android: solo permiso `INTERNET`; release APK/AAB por Gradle.
 - Creditos: crear, listar, ver detalle, editar, eliminar, exportar a PDF (generado en `credit-backend`, no en el dispositivo) e historial de auditoria — ver `knowledge/credits/current-credit-detail-flow.md`.
 - Splash: `src/app/Splash.tsx` (branded, `Animated` de RN, sin libreria nativa nueva) + `android/.../drawable/splash_background.xml` para el arranque en frio.
+- Offline: `NetworkStatusProvider`/`OfflineBanner` (via `@react-native-community/netinfo`) detectan conectividad global; solo la creacion de creditos funciona sin internet, encolando en `AsyncStorage` (`features/credits/offlineQueue.ts`) y sincronizando al volver la conexion (`features/credits/offlineSync.ts`) — ver `knowledge/credits/current-credit-offline-queue-flow.md`.
 
 ## Protocolo De Inicio
 1. Ejecutar `pwd` y confirmar que estas en `credit-mobile`.
@@ -87,8 +88,9 @@ Un solo `AGENTS.md` en todo el repo (este archivo). Cada capa y slice de `src/` 
 | `src/shared/api` | `src/shared/api/README.md` |
 | `src/shared/config` | `src/shared/config/README.md` |
 | `src/shared/lib` | `src/shared/lib/README.md` |
+| `src/shared/network` (estado de conectividad global) | `src/shared/network/README.md` |
 
-Flujos completos (con diagrama) en `knowledge/`: `knowledge/auth/current-auth-session-flow.md`, `knowledge/credits/current-credit-registration-flow.md`, `knowledge/credits/current-credit-query-flow.md`, `knowledge/credits/current-credit-detail-flow.md`, `knowledge/android/current-android-build-and-signing-flow.md`.
+Flujos completos (con diagrama) en `knowledge/`: `knowledge/auth/current-auth-session-flow.md`, `knowledge/credits/current-credit-registration-flow.md`, `knowledge/credits/current-credit-query-flow.md`, `knowledge/credits/current-credit-detail-flow.md`, `knowledge/credits/current-credit-offline-queue-flow.md`, `knowledge/android/current-android-build-and-signing-flow.md`.
 
 ## Documentacion Obligatoria
 - Cambios de estructura FSD: actualizar `src/AGENTS.md` y el AGENTS de capa/slice.
