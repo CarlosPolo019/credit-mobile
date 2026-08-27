@@ -6,6 +6,7 @@ import { CreditCreatePage } from "@/pages/credit-create/CreditCreatePage";
 import { CreditDetailPage } from "@/pages/credit-detail/CreditDetailPage";
 import { CreditEditPage } from "@/pages/credit-detail/CreditEditPage";
 import { CreditListPage } from "@/pages/credit-list/CreditListPage";
+import { DashboardPage } from "@/pages/dashboard/DashboardPage";
 import { EmailJobListPage } from "@/pages/email-job-list/EmailJobListPage";
 import { HomePage } from "@/pages/home/HomePage";
 import { LoginPage } from "@/pages/login/LoginPage";
@@ -21,6 +22,7 @@ export type RootStackParamList = {
   CreditEdit: { creditId: string };
   ClientList: undefined;
   EmailJobList: undefined;
+  Dashboard: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -54,6 +56,7 @@ export function AppRouter() {
             <Stack.Screen name="CreditEdit" component={CreditEditPage} options={{ title: "Editar crédito" }} />
             <Stack.Screen name="ClientList" component={ClientListPage} options={{ title: "Clientes" }} />
             <Stack.Screen name="EmailJobList" component={EmailJobListPage} options={{ title: "Correos" }} />
+            <Stack.Screen name="Dashboard" component={DashboardPage} options={{ title: "Dashboard" }} />
           </>
         ) : (
           <Stack.Screen name="Login" component={LoginPage} options={{ title: "Ingreso" }} />

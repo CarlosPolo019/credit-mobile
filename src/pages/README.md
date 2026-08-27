@@ -12,6 +12,7 @@
 - `credit-detail/`: detalle, editar (via `CreditEditPage` + `CreditForm` en modo `edit`), eliminar, exportar PDF, historial de auditoria.
 - `client-list/`: directorio de clientes de solo lectura, solo `role: "ADMIN"`.
 - `email-job-list/`: estado de notificaciones por correo, solo `role: "ADMIN"` (tambien exigido por el backend).
+- `dashboard/`: resumen agregado (creditos por comercial, montos, correos por estado), solo `role: "ADMIN"`, calculado en el cliente a partir de `listCredits`/`listEmailJobs`.
 
 ## External Deps
 - React Navigation route props.

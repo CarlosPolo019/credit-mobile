@@ -1,5 +1,5 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ListChecks, Mail, PlusCircle, Users } from "lucide-react-native";
+import { LayoutDashboard, ListChecks, Mail, PlusCircle, Users } from "lucide-react-native";
 import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { Image, Text, TouchableHighlight, TouchableOpacity, View, useColorScheme } from "react-native";
 import type { RootStackParamList } from "@/app/AppRouter";
@@ -101,6 +101,12 @@ export function HomePage({ navigation }: HomePageProps) {
               caption="Estado de las notificaciones enviadas"
               icon={<Mail color={isDarkMode ? colors.brand400 : colors.brand700} size={24} />}
               onPress={() => navigation.navigate("EmailJobList")}
+            />
+            <ActionRow
+              title="Dashboard"
+              caption="Créditos por comercial, montos y correos"
+              icon={<LayoutDashboard color={isDarkMode ? colors.brand400 : colors.brand700} size={24} />}
+              onPress={() => navigation.navigate("Dashboard")}
             />
           </>
         ) : null}
