@@ -67,19 +67,23 @@ Reglas:
 - La orden de compilar debe ser explicita en el turno actual; no asumir autorizacion de turnos anteriores ni de pedidos genericos como "termina el cambio", "deja todo listo" o "valida todo".
 
 ## Correr En Un Dispositivo Fisico (`npm run android`, debug)
-Dos errores ya vividos en este repo al instalar un build debug en un telefono real conectado por USB (no el emulador) — evitarlos de entrada:
+Tres errores ya vividos en este repo al instalar un build debug en un telefono real conectado por USB (no el emulador) — evitarlos de entrada:
 
 1. **`CREDIT_API_BASE_URL=http://10.0.2.2:8080` (el default) no funciona en un dispositivo fisico.** `10.0.2.2` es un alias especial que solo el **emulador** de Android resuelve hacia el host; en un telefono real no resuelve a nada, asi que cada llamada a la API falla (login, listar creditos, etc. — se ve como error de conexion generalizado, no como un crash puntual). Para un dispositivo real, correr con una URL que el telefono si pueda alcanzar, por ejemplo la API de produccion:
    ```bash
    CREDIT_API_BASE_URL=https://fyatest-api.cmescorcia.com npm run android
    ```
-2. **`npm run android` corrido desde un shell no interactivo (por ejemplo, el Bash de un agente) no deja el bundler Metro corriendo.** `react-native run-android` normalmente abre una terminal nueva para Metro; sin terminal interactiva ese paso no pasa, el APK se instala bien pero al abrir la app da **"Unable to load script"** (no hay nada escuchando en `:8081`). Hay que arrancar Metro aparte, en background, con el mismo `CREDIT_API_BASE_URL`, y despues relanzar la app:
+2. **`npm run android` corrido desde un shell no interactivo (por ejemplo, el Bash de un agente) no deja el bundler Metro corriendo.** `react-native run-android` normalmente abre una terminal nueva para Metro; sin terminal interactiva ese paso no pasa, el APK se instala bien pero al abrir la app da **"Unable to load script"** (no hay nada escuchando en `:8081`).
+3. **Arrancar Metro con `npx react-native start` directo (en vez de `npm start`) salta el hook `prestart` (`node scripts/write-mobile-config.js`), asi que `generated.env.ts` se queda con la URL vieja/default aunque le pases `CREDIT_API_BASE_URL` a ese comando.** Esto paso en la practica: la app quedaba pegada en la pantalla de "despertando el servidor" para siempre porque seguia pegandole a `10.0.2.2:8080` desde el dispositivo real (punto 1), aunque el build original se habia hecho con la URL correcta — el Metro levantado a mano no la tenia. Antes de levantar Metro asi, regenerar el archivo a mano con la misma variable:
    ```bash
+   CREDIT_API_BASE_URL=https://fyatest-api.cmescorcia.com node scripts/write-mobile-config.js
    CREDIT_API_BASE_URL=https://fyatest-api.cmescorcia.com npx react-native start &
-   # confirmar: lsof -i :8081 (debe haber un proceso node) y adb reverse --list (debe listar tcp:8081 tcp:8081)
+   # confirmar: lsof -i :8081 (debe haber un proceso node), adb reverse --list (debe listar tcp:8081 tcp:8081),
+   # y cat src/shared/config/generated.env.ts (debe mostrar la URL correcta, no 10.0.2.2)
    adb shell am force-stop com.creditmobile && adb shell am start -n com.creditmobile/.MainActivity
    ```
-- Diagnostico rapido si algo falla despues de instalar: `adb logcat -d -v time | grep -iE "ReactNativeJS|FATAL EXCEPTION|unable to load script"`.
+   Cambiar `generated.env.ts` a mano no alcanza solo: Metro con Fast Refresh no vuelve a leer ese archivo si el componente ya esta montado con el valor viejo en closure — hace falta el force-stop + relanzar para que arranque de cero con el bundle nuevo.
+- Diagnostico rapido si algo falla despues de instalar: `adb logcat -d -v time | grep -iE "ReactNativeJS|FATAL EXCEPTION|unable to load script"` — pero en builds recientes los `console.log`/errores de JS ya no siempre aparecen ahi (el propio Metro avisa "JavaScript logs have moved" hacia React Native DevTools). Si logcat no muestra nada util, agregar un `console.log` temporal en el punto sospechoso (aparece con el tag `ReactNativeJS`) en vez de asumir que "sin log = sin error".
 
 ## Mapa De Documentacion
 Un solo `AGENTS.md` en todo el repo (este archivo). Cada capa y slice de `src/` tiene su propio `README.md` descriptivo (proposito, archivos clave, dependencias, riesgos) — leerlo antes de tocar esa area:
