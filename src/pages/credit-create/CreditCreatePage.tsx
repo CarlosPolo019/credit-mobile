@@ -6,6 +6,8 @@ import type { RootStackParamList } from "@/app/AppRouter";
 import type { CreditPayload } from "@/entities/credit/types";
 import { useSession } from "@/entities/session/SessionContext";
 import { createCredit } from "@/features/credits/api";
+import { enqueueCredit } from "@/features/credits/offlineQueue";
+import { useNetworkStatus } from "@/shared/network/NetworkStatusContext";
 import { Banner, Screen, colors } from "@/shared/ui";
 import { CreditForm } from "./CreditForm";
 
@@ -14,11 +16,17 @@ type CreditCreatePageProps = NativeStackScreenProps<RootStackParamList, "CreditC
 export function CreditCreatePage({ navigation }: CreditCreatePageProps) {
   const isDarkMode = useColorScheme() === "dark";
   const { session } = useSession();
+  const { isOnline } = useNetworkStatus();
   const [message, setMessage] = useState("");
   const salespersonLabel = session?.user.fullName || session?.user.document || session?.user.username || "";
 
   const handleSubmit = async (payload: CreditPayload) => {
     setMessage("");
+    if (!isOnline) {
+      await enqueueCredit(payload);
+      setMessage("Crédito guardado offline. Se sincronizará cuando vuelva internet.");
+      return true;
+    }
     try {
       await createCredit(payload);
       setMessage("Crédito registrado. La notificación quedó en cola.");

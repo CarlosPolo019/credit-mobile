@@ -1,0 +1,81 @@
+# Flow: Offline Credit Queue
+
+## Estado
+- `active`
+
+## Proposito
+- Permitir registrar creditos sin internet, guardandolos en una cola local y sincronizandolos al volver la conexion. Editar, eliminar, exportar a PDF, login y registro siguen requiriendo internet.
+
+## Participantes
+- `shared/network/NetworkStatusContext.tsx` (`NetworkStatusProvider`/`useNetworkStatus`, montado en `src/app/App.tsx`)
+- `shared/ui/OfflineBanner.tsx` (renderizado en `src/app/AppRouter.tsx`, arriba de `Stack.Navigator`)
+- `shared/api/client.ts` (traduce errores de red sin `response` a un mensaje offline)
+- `pages/credit-create/CreditCreatePage.tsx`, `CreditForm.tsx`, `CreditConfirmSheetContent.tsx`
+- `features/credits/offlineQueue.ts` (cola en `AsyncStorage`)
+- `features/credits/offlineSync.ts` (`syncQueuedCredits`)
+- `pages/home/HomePage.tsx`, `ProfileSheetContent.tsx` (disparan y muestran el estado de la sincronizacion)
+
+## Flujo
+```mermaid
+sequenceDiagram
+  participant User
+  participant Form as CreditForm
+  participant Page as CreditCreatePage
+  participant Queue as offlineQueue (AsyncStorage)
+  participant Home as HomePage/ProfileSheet
+  participant Sync as offlineSync
+  participant Backend
+
+  Note over User,Backend: Sin internet
+  User->>Form: Completa credito, confirma
+  Form->>Form: Salta estimateCredit (create + offline)
+  Form->>Page: onSubmit(payload)
+  Page->>Queue: enqueueCredit(payload)
+  Page-->>User: "Crédito guardado offline. Se sincronizará cuando vuelva internet."
+
+  Note over User,Backend: Vuelve la conexion
+  Home->>Home: useNetworkStatus() -> isOnline = true
+  Home->>Sync: syncQueuedCredits()
+  Sync->>Queue: listQueuedCredits()
+  loop cada item
+    Sync->>Queue: markQueuedCreditSyncing(id)
+    Sync->>Backend: POST /api/v1/credits
+    alt exito
+      Backend-->>Sync: CreditResponse
+      Sync->>Queue: removeQueuedCredit(id)
+    else falla
+      Sync->>Queue: markQueuedCreditFailed(id, mensaje)
+    end
+  end
+  Home->>Queue: countPendingAndFailed()
+  Home-->>User: contador actualizado (avatar sin punto rojo si quedo en 0)
+```
+
+## Deteccion de conectividad
+- `NetworkStatusProvider` escucha `NetInfo.addEventListener` y expone `status: "online" | "limited" | "offline"`. `isOnline` es `false` solo en `"offline"` (sin `isConnected` o `isInternetReachable === false`); `"limited"` (todavia resolviendo) se trata como online para no bloquear creacion, pero el banner lo distingue visualmente.
+- `OfflineBanner` se monta una sola vez en `AppRouter`, visible en todas las pantallas (autenticadas o no).
+
+## Cola local
+- `AsyncStorage`, key `fya-credit-offline-queue`, array de `{ id, payload, createdAt, attempts, status: "pending" | "syncing" | "failed", lastError }`.
+- `id` es `${Date.now()}-${random}` (no UUID, suficiente para una cola local de un solo dispositivo).
+- No hay idempotencia remota: si `removeQueuedCredit` fallara justo despues de un `createCredit` exitoso, un reintento manual duplicaria el credito en el backend. Riesgo aceptado en esta version (ver Assumptions del plan original).
+
+## Sincronizacion
+- Automatica: `HomePage` corre `syncQueuedCredits()` cada vez que `isOnline` pasa a `true`.
+- Manual: boton "Sincronizar" en `ProfileSheetContent` (deshabilitado si no hay items pendientes/fallidos, oculto si no hay internet).
+- Items `failed` se reintentan en la siguiente sincronizacion (automatica o manual) igual que los `pending`.
+- Un credito sincronizado no aparece en `CreditList` hasta que la sincronizacion termina (no hay estado "optimista" en la lista).
+
+## Alcance
+- Solo creacion de creditos funciona offline. Editar (`CreditForm` en modo `edit`), eliminar, exportar PDF, login y registro siempre requieren internet — si fallan sin conexion, `shared/api/client.ts` devuelve "Sin conexión. Revisa internet e intenta de nuevo." y la pantalla lo muestra como cualquier otro error.
+- No se toco el backend: `POST /api/v1/credits` es el mismo endpoint que usa la creacion online.
+
+## Errores
+- Sin conexion al llamar cualquier endpoint: `shared/api/client.ts` devuelve "Sin conexión. Revisa internet e intenta de nuevo." (en vez del mensaje generico).
+- Fallo al sincronizar un item de la cola: queda `status: "failed"` con `lastError` saneado (el `Error.message` que ya paso por el interceptor de Axios); no bloquea la sincronizacion de los demas items.
+
+## Validacion
+- `npm run typecheck`
+- `npm run lint`
+- `npm test` (`__tests__/offlineQueue.test.ts`, `__tests__/apiClientOfflineError.test.ts`)
+- Prueba manual Android: apagar internet, crear un credito, ver el banner y el punto rojo en el avatar, reactivar internet, confirmar que se sincroniza solo y aparece en el listado/backend.

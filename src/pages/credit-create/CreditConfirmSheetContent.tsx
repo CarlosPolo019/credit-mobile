@@ -5,8 +5,8 @@ import { Button } from "@/shared/ui";
 
 type CreditConfirmSheetContentProps = {
   credit: CreditPayload;
-  monthlyPayment: number;
-  totalToPay: number;
+  monthlyPayment: number | null;
+  totalToPay: number | null;
   salespersonLabel: string;
   onCancel: () => void;
   onConfirm: () => void;
@@ -54,8 +54,16 @@ export function CreditConfirmSheetContent({ credit, monthlyPayment, totalToPay, 
         <SummaryRow label="Valor del crédito" value={formatCurrency(credit.amount)} />
         <SummaryRow label="Tasa de interés mensual" value={`${credit.interestRate}%`} />
         <SummaryRow label="Plazo" value={`${credit.termMonths} meses`} />
-        <SummaryRow label="Cuota mensual estimada" value={formatCurrency(monthlyPayment)} emphasis />
-        <SummaryRow label="Total estimado a pagar" value={formatCurrency(totalToPay)} emphasis />
+        <SummaryRow
+          label="Cuota mensual estimada"
+          value={monthlyPayment != null ? formatCurrency(monthlyPayment) : "No disponible sin conexión"}
+          emphasis
+        />
+        <SummaryRow
+          label="Total estimado a pagar"
+          value={totalToPay != null ? formatCurrency(totalToPay) : "No disponible sin conexión"}
+          emphasis
+        />
       </View>
 
       <Text className="pt-3 text-xs text-gray-500 dark:text-neutral-400">

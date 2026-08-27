@@ -4,6 +4,7 @@ import { View } from "react-native";
 import type { CreditEstimate, CreditPayload } from "@/entities/credit/types";
 import { type CreditFormValues, validateCredit } from "@/entities/credit/validation";
 import { estimateCredit } from "@/features/credits/api";
+import { useNetworkStatus } from "@/shared/network/NetworkStatusContext";
 import { Banner, BottomSheetModal, type BottomSheetModalRef, Button, TextField, colors } from "@/shared/ui";
 import { CreditConfirmSheetContent } from "./CreditConfirmSheetContent";
 
@@ -33,6 +34,7 @@ type CreditFormProps = {
  */
 export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: CreditFormProps) {
   const isEdit = mode === "edit";
+  const { isOnline } = useNetworkStatus();
   const [values, setValues] = useState<CreditFormValues>(initialValues ?? emptyValues);
   const [errors, setErrors] = useState<Partial<Record<keyof CreditFormValues, string>>>({});
   const [error, setError] = useState("");
@@ -57,6 +59,12 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
       return;
     }
     setError("");
+    if (!isEdit && !isOnline) {
+      setEstimate(null);
+      setPendingCredit(validation.value);
+      confirmSheetRef.current?.present();
+      return;
+    }
     setIsEstimating(true);
     try {
       const response = await estimateCredit(validation.value);
@@ -114,11 +122,11 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
       </View>
 
       <BottomSheetModal ref={confirmSheetRef}>
-        {pendingCredit && estimate ? (
+        {pendingCredit ? (
           <CreditConfirmSheetContent
             credit={pendingCredit}
-            monthlyPayment={estimate.monthlyPayment}
-            totalToPay={estimate.totalToPay}
+            monthlyPayment={estimate?.monthlyPayment ?? null}
+            totalToPay={estimate?.totalToPay ?? null}
             salespersonLabel={salespersonLabel}
             mode={mode}
             onCancel={() => confirmSheetRef.current?.dismiss()}

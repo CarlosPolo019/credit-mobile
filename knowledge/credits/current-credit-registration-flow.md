@@ -36,11 +36,13 @@ sequenceDiagram
   Feature-->>Form: Success (sheet se cierra, formulario se limpia)
 ```
 
-El paso de confirmacion es igual al de `credit-web` (`CreditConfirmDialog.jsx`): el Comercial se muestra ahi (trazabilidad), no en el formulario, porque ya viene de la sesion. La cuota/total estimados los calcula el backend (`POST /credits/estimate`, misma formula que `CreditResponse.estimatedMonthlyPayment`/`estimatedTotalToPay` y el PDF) — no hay amortizacion calculada en el cliente, ni aqui ni en `credit-web`. Si `estimateCredit` falla se muestra un banner y no se abre el sheet; si `createCredit` falla, el sheet se cierra y el error se muestra en el `Banner` de la pagina.
+El paso de confirmacion es igual al de `credit-web` (`CreditConfirmDialog.jsx`): el Comercial se muestra ahi (trazabilidad), no en el formulario, porque ya viene de la sesion. La cuota/total estimados los calcula el backend (`POST /credits/estimate`, misma formula que `CreditResponse.estimatedMonthlyPayment`/`estimatedTotalToPay` y el PDF) — no hay amortizacion calculada en el cliente, ni aqui ni en `credit-web`. Con internet, si `estimateCredit` falla se muestra un banner y no se abre el sheet; si `createCredit` falla, el sheet se cierra y el error se muestra en el `Banner` de la pagina.
+
+**Sin internet** (solo en modo `create`): `CreditForm` salta `estimateCredit` y abre el sheet igual (cuota/total como "No disponible sin conexión"); al confirmar, `CreditCreatePage` encola el credito localmente en vez de llamar a `createCredit`. Detalle completo en `knowledge/credits/current-credit-offline-queue-flow.md`.
 
 ## Errores
 - Validacion local: mostrar mensajes antes de llamar API.
-- Fallo al estimar: banner de error, el sheet no se abre.
+- Fallo al estimar (con internet): banner de error, el sheet no se abre.
 - Error backend/red al crear: mostrar banner de error.
 - Sesion expirada: interceptor limpia sesion.
 
