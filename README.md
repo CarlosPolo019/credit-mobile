@@ -26,12 +26,14 @@ flowchart LR
 ```mermaid
 sequenceDiagram
   participant User as Comercial
-  participant Page as CreditCreatePage
+  participant Form as CreditForm
   participant Sheet as CreditConfirmSheetContent
   participant API as credit-backend
-  User->>Page: Completa cédula, nombre, valor, tasa, plazo
-  Page->>Page: valida (sin pedir Comercial: viene de la sesión)
-  Page->>Sheet: abre resumen + cuota/total estimados
+  User->>Form: Completa cédula, nombre, valor, tasa, plazo
+  Form->>Form: valida (sin pedir Comercial: viene de la sesión)
+  Form->>API: POST /api/v1/credits/estimate
+  API-->>Form: cuota y total estimados
+  Form->>Sheet: abre resumen + estimación (recibida del backend)
   User->>Sheet: Confirmar y registrar
   Sheet->>API: POST /api/v1/credits (Bearer JWT)
   API-->>Sheet: 201 CreditResponse
