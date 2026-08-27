@@ -7,10 +7,11 @@ import { useScrollToInput } from "./Screen";
 type TextFieldProps = TextInputProps & {
   label: string;
   error?: string;
+  helperText?: string;
   className?: string;
 };
 
-export function TextField({ label, error, className, onFocus, ...props }: TextFieldProps) {
+export function TextField({ label, error, helperText, className, onFocus, ...props }: TextFieldProps) {
   const isDarkMode = useColorScheme() === "dark";
   const inputRef = useRef<TextInput>(null);
   const scrollToInput = useScrollToInput();
@@ -34,7 +35,11 @@ export function TextField({ label, error, className, onFocus, ...props }: TextFi
         onFocus={handleFocus}
         {...props}
       />
-      {error ? <Text className="text-xs font-semibold text-red-500">{error}</Text> : null}
+      {error ? (
+        <Text className="text-xs font-semibold text-red-500">{error}</Text>
+      ) : helperText ? (
+        <Text className="text-xs text-gray-500 dark:text-neutral-400">{helperText}</Text>
+      ) : null}
     </View>
   );
 }

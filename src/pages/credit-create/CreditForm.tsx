@@ -2,7 +2,7 @@ import { CheckCircle2 } from "lucide-react-native";
 import { useEffect, useRef, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import type { Client, CreditEstimate, CreditPayload } from "@/entities/credit/types";
-import { type CreditFormValues, validateCredit } from "@/entities/credit/validation";
+import { type CreditFormValues, creditLimits, validateCredit } from "@/entities/credit/validation";
 import { estimateCredit, listClients } from "@/features/credits/api";
 import { useNetworkStatus } from "@/shared/network/NetworkStatusContext";
 import { Banner, BottomSheetModal, type BottomSheetModalRef, Button, TextField, colors } from "@/shared/ui";
@@ -199,10 +199,33 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
           <TextField className="flex-1" label="Primer apellido" value={values.clientFirstSurname} onChangeText={(value) => setValue("clientFirstSurname", value)} error={errors.clientFirstSurname} editable={!selectedClient} />
           <TextField className="flex-1" label="Segundo apellido" value={values.clientSecondSurname} onChangeText={(value) => setValue("clientSecondSurname", value)} error={errors.clientSecondSurname} editable={!selectedClient} />
         </View>
-        <TextField label="Valor del crédito" value={values.amount} onChangeText={(value) => setValue("amount", value)} keyboardType="numeric" error={errors.amount} />
+        <TextField
+          label="Valor del crédito"
+          value={values.amount}
+          onChangeText={(value) => setValue("amount", value)}
+          keyboardType="numeric"
+          error={errors.amount}
+          helperText={`Máximo ${creditLimits.maxAmount.toLocaleString("es-CO")}`}
+        />
         <View className="flex-row gap-3">
-          <TextField className="flex-1" label="Tasa de interés (%)" value={values.interestRate} onChangeText={(value) => setValue("interestRate", value)} keyboardType="numeric" error={errors.interestRate} />
-          <TextField className="flex-1" label="Plazo (meses)" value={values.termMonths} onChangeText={(value) => setValue("termMonths", value)} keyboardType="numeric" error={errors.termMonths} />
+          <TextField
+            className="flex-1"
+            label="Tasa de interés (%)"
+            value={values.interestRate}
+            onChangeText={(value) => setValue("interestRate", value)}
+            keyboardType="numeric"
+            error={errors.interestRate}
+            helperText={`Entre ${creditLimits.minInterestRate}% y ${creditLimits.maxInterestRate}%`}
+          />
+          <TextField
+            className="flex-1"
+            label="Plazo (meses)"
+            value={values.termMonths}
+            onChangeText={(value) => setValue("termMonths", value)}
+            keyboardType="numeric"
+            error={errors.termMonths}
+            helperText={`Entre ${creditLimits.minTermMonths} y ${creditLimits.maxTermMonths} meses`}
+          />
         </View>
         <Button
           title={isEdit ? "Guardar cambios" : "Registrar crédito"}
