@@ -8,8 +8,8 @@ Este repo es **uno de los tres entregables independientes** de la prueba técnic
 
 | Repo | Rol | README |
 |---|---|---|
-| `credit-backend` | API REST, Firestore, JWT, worker de correo | [`../credit-backend/README.md`](../credit-backend/README.md) |
-| `credit-web` | Panel administrativo (React) para registrar/consultar créditos y monitorear correos | [`../credit-web/README.md`](../credit-web/README.md) |
+| `credit-backend` | API REST, Firestore, JWT, worker de correo | [github.com/CarlosPolo019/credit-backend](https://github.com/CarlosPolo019/credit-backend) |
+| `credit-web` | Panel administrativo (React) para registrar/consultar créditos y monitorear correos | [github.com/CarlosPolo019/credit-web](https://github.com/CarlosPolo019/credit-web) |
 | `credit-mobile` (este repo) | App Android (React Native) para el comercial en campo | — |
 
 ## Arquitectura
