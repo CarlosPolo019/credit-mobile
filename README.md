@@ -12,7 +12,7 @@ Este repo es **uno de los tres entregables independientes** de la prueba técnic
 | `credit-web` | Panel administrativo (React) para registrar/consultar créditos y monitorear correos | [`../credit-web/README.md`](../credit-web/README.md) |
 | `credit-mobile` (este repo) | App Android (React Native) para el comercial en campo | — |
 
-## Architecture
+## Arquitectura
 
 ```mermaid
 flowchart LR
@@ -44,26 +44,26 @@ Sin internet, el registro sigue funcionando: se salta la estimación y el crédi
 
 ## Stack
 
-| Layer | Tech |
+| Capa | Tecnología |
 |---|---|
 | Runtime | React Native 0.83.0, React 19.2.0, TypeScript |
-| Navigation | React Navigation 7 |
-| Styling | NativeWind — layout from `challenge-blossom`, brand tokens from Fya Social Capital (`brand-*`/`ink`, shared with `credit-web`) |
+| Navegación | React Navigation 7 |
+| Estilos | NativeWind — layout inspirado en `challenge-blossom`, tokens de marca de Fya Social Capital (`brand-*`/`ink`, compartidos con `credit-web`) |
 | HTTP | Axios |
-| Icons | lucide-react-native |
-| Session | react-native-keychain |
-| PDF export | react-native-blob-util (authenticated download) + react-native-share (open/share) — the PDF itself is rendered server-side by `credit-backend` |
-| Offline | @react-native-community/netinfo (connectivity detection) + @react-native-async-storage/async-storage (local credit queue) |
+| Iconos | lucide-react-native |
+| Sesión | react-native-keychain |
+| Exportar PDF | react-native-blob-util (descarga autenticada) + react-native-share (abrir/compartir) — el PDF se renderiza en el servidor, en `credit-backend` |
+| Offline | @react-native-community/netinfo (detección de conectividad) + @react-native-async-storage/async-storage (cola local de créditos) |
 
-## Feature-Sliced Structure
+## Estructura Feature-Sliced
 
-| Layer | Purpose | Doc |
+| Capa | Propósito | Doc |
 |---|---|---|
-| `src/app` | Providers and navigation | [`src/app/README.md`](src/app/README.md) |
+| `src/app` | Providers y navegación | [`src/app/README.md`](src/app/README.md) |
 | `src/pages` | `login`, `register`, `home`, `credit-create`, `credit-list`, `credit-detail` | [`src/pages/README.md`](src/pages/README.md) |
-| `src/features` | `auth` and `credits` APIs | [`src/features/README.md`](src/features/README.md) |
-| `src/entities` | Session and credit rules/formatting/payment estimate | [`src/entities/README.md`](src/entities/README.md) |
-| `src/shared` | API client, config, storage, UI kit | [`src/shared/README.md`](src/shared/README.md) |
+| `src/features` | APIs de `auth` y `credits` | [`src/features/README.md`](src/features/README.md) |
+| `src/entities` | Reglas de sesión y crédito, formato, estimación de pago | [`src/entities/README.md`](src/entities/README.md) |
+| `src/shared` | Cliente API, config, storage, kit de UI | [`src/shared/README.md`](src/shared/README.md) |
 
 ## Requisitos Previos
 
@@ -90,38 +90,41 @@ Sin internet, el registro sigue funcionando: se salta la estimación y el crédi
    El emulador ya apunta a `http://10.0.2.2:8080` (equivalente a `localhost:8080` de tu máquina) sin configuración adicional.
 5. **Iniciá sesión** con un usuario sembrado del backend (`900100001 / demo12345`) o el usuario demo (`demo / demo12345`).
 
-Para un dispositivo físico o un build de release, seguí la sección [Build APK](#build-apk) con `CREDIT_API_BASE_URL` apuntando a un backend accesible por HTTPS.
+Para un dispositivo físico o un build de release, seguí la sección [Compilar APK](#compilar-apk) con `CREDIT_API_BASE_URL` apuntando a un backend accesible por HTTPS.
 
-## Configure Backend URL
+## Configurar La URL Del Backend
 
-For local Android emulator the default is:
+Para el emulador Android local, el valor por defecto es:
 
 ```text
 http://10.0.2.2:8080
 ```
 
-For release builds, set `CREDIT_API_BASE_URL` before running the build command:
+Para builds de release, seteá `CREDIT_API_BASE_URL` antes de correr el comando de build:
 
 ```bash
 CREDIT_API_BASE_URL=https://fyatest-api.cmescorcia.com npm run build:apk
 CREDIT_API_BASE_URL=https://fyatest-api.cmescorcia.com npm run build:aab
 ```
 
-The npm lifecycle writes `src/shared/config/generated.env.ts` before Android build/start commands — it's generated and gitignored; change `CREDIT_API_BASE_URL`, not that file.
+`https://fyatest-api.cmescorcia.com` es la API de producción — la misma que consume `credit-web`, servida por HTTPS bajo su propio subdominio. Un APK/AAB compilado con ese valor habla contra producción en vez de un backend local.
 
-> **APK/AAB builds are only run when explicitly requested** (see `AGENTS.md`) — they're slow and unnecessary for most JS/TS changes.
+El lifecycle de npm escribe `src/shared/config/generated.env.ts` antes de los comandos de build/start de Android — es generado y está en `.gitignore`; cambiá `CREDIT_API_BASE_URL`, no ese archivo.
 
-## Features
+> **Los builds de APK/AAB solo se corren cuando se piden explícitamente** (ver `AGENTS.md`) — son lentos e innecesarios para la mayoría de los cambios JS/TS.
 
-- Login with `{ username, password }` + JWT (username is the cédula or the demo user).
-- Register account with numeric document and password.
-- Token storage in Keychain.
-- Register credit with a confirmation step (estimated monthly installment/total) before submitting.
-- Query active credits: filter by client, document, salesperson (select); sort by date or amount.
-- Credit detail: view, edit, delete, audit history (who changed what), and export as a server-rendered PDF.
-- Offline credit creation: works without internet by queueing locally and syncing automatically (or manually, from the profile sheet) once connectivity returns; editing/deleting/PDF/login/register still require internet.
-- Animated branded splash screen and app icon.
-- Session-expired handling.
+## Funcionalidades
+
+- Login con `{ username, password }` + JWT (`username` puede ser la cédula o el usuario demo).
+- Registro de cuenta con documento numérico y contraseña.
+- Token guardado en Keychain.
+- Registrar crédito con un paso de confirmación (cuota mensual/total estimados) antes de enviar.
+- Consultar créditos activos: filtrar por cliente, documento, comercial (select); ordenar por fecha o monto.
+- Detalle de crédito: ver, editar, eliminar, historial de auditoría (quién cambió qué) y exportar como PDF generado en el servidor.
+- Creación de créditos offline: funciona sin internet guardando en cola local y sincronizando automáticamente (o manualmente, desde el sheet de perfil) al recuperar la conexión; editar/eliminar/PDF/login/registro siguen requiriendo internet.
+- Pantalla de "despertando el servidor": antes de Login/Register, si el backend (Render free tier) está dormido, la app hace polling a `/actuator/health` con mensajes de espera en vez de mostrar un error de conexión confuso. Con sesión ya iniciada no bloquea nada — la cola offline permite seguir registrando créditos sin esperar al backend.
+- Splash screen animado con marca e ícono de la app.
+- Manejo de sesión expirada.
 
 ## Capturas
 
@@ -137,38 +140,38 @@ The npm lifecycle writes `src/shared/config/generated.env.ts` before Android bui
 |---|---|
 | ![Editar crédito](docs/screenshots/credit-edit.png) | ![Confirmar eliminación](docs/screenshots/credit-delete-confirm.png) |
 
-## Build APK
+## Compilar APK
 
 ```bash
 npm run build:apk
 ```
-Output: `android/app/build/outputs/apk/release/app-release.apk`
+Salida: `android/app/build/outputs/apk/release/app-release.apk`
 
-## Build AAB
+## Compilar AAB
 
 ```bash
 npm run build:aab
 ```
-Output: `android/app/build/outputs/bundle/release/app-release.aab`
+Salida: `android/app/build/outputs/bundle/release/app-release.aab`
 
 ## CI (GitHub Actions)
 
-`.github/workflows/build-android.yml` builds the release APK and AAB. It's `workflow_dispatch`-only (manual trigger from the Actions tab) — there's no automatic build on push or tag, matching the "builds only when explicitly requested" policy above. It runs `npm run build:apk` and `npm run build:aab` with the signing secrets below and uploads both artifacts.
+`.github/workflows/build-android.yml` compila el APK y el AAB de release. Es `workflow_dispatch` solamente (disparo manual desde la pestaña Actions) — no hay build automático en push ni en tag, siguiendo la política de "solo se compila cuando se pide explícitamente" de arriba. Corre `npm run build:apk` y `npm run build:aab` con los secrets de firma de abajo y sube ambos artefactos.
 
-## Signing
+## Firma
 
-Production signing uses:
+La firma de producción usa:
 
-| Variable | Purpose |
+| Variable | Propósito |
 |---|---|
-| `ANDROID_KEYSTORE_BASE64` | Base64-encoded keystore (CI only) |
-| `ANDROID_KEYSTORE_PASSWORD` | Keystore password |
-| `ANDROID_KEY_ALIAS` | Signing key alias |
-| `ANDROID_KEY_PASSWORD` | Signing key password |
+| `ANDROID_KEYSTORE_BASE64` | Keystore en Base64 (solo CI) |
+| `ANDROID_KEYSTORE_PASSWORD` | Contraseña del keystore |
+| `ANDROID_KEY_ALIAS` | Alias de la key de firma |
+| `ANDROID_KEY_PASSWORD` | Contraseña de la key de firma |
 
-The CI workflow writes `release.keystore` only during CI runs. Local builds fall back to a debug-only keystore so an installable APK can be generated without production secrets. Gradle consumes `RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`.
+El workflow de CI escribe `release.keystore` solo durante los runs de CI. Los builds locales caen a un keystore de debug para poder generar un APK instalable sin secrets de producción. Gradle consume `RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`.
 
-## Quality
+## Calidad
 
 ```bash
 npm run typecheck
@@ -176,16 +179,16 @@ npm run lint
 npm test
 ```
 
-## Documentation Map
+## Mapa De Documentación
 
-| File | Covers |
+| Archivo | Qué cubre |
 |---|---|
-| [`AGENTS.md`](AGENTS.md) | Working rules for agents (the only `AGENTS.md` in this repo — includes the full doc map) |
-| `src/**/README.md` | Per layer/slice: purpose, key files, risks |
-| [`docs/permissions-rules.md`](docs/permissions-rules.md) | Android permissions |
-| [`knowledge/auth/current-auth-session-flow.md`](knowledge/auth/current-auth-session-flow.md) | JWT session flow |
-| [`knowledge/credits/current-credit-registration-flow.md`](knowledge/credits/current-credit-registration-flow.md) | Credit registration + confirmation |
-| [`knowledge/credits/current-credit-query-flow.md`](knowledge/credits/current-credit-query-flow.md) | Credit query/filters |
-| [`knowledge/credits/current-credit-detail-flow.md`](knowledge/credits/current-credit-detail-flow.md) | Credit detail: view, edit, delete, audit history, PDF export |
-| [`knowledge/credits/current-credit-offline-queue-flow.md`](knowledge/credits/current-credit-offline-queue-flow.md) | Offline credit creation, local queue, sync |
-| [`knowledge/android/current-android-build-and-signing-flow.md`](knowledge/android/current-android-build-and-signing-flow.md) | Build and signing |
+| [`AGENTS.md`](AGENTS.md) | Reglas de trabajo para agentes (el único `AGENTS.md` de este repo — incluye el mapa de documentación completo) |
+| `src/**/README.md` | Por capa/slice: propósito, archivos clave, riesgos |
+| [`docs/permissions-rules.md`](docs/permissions-rules.md) | Permisos de Android |
+| [`knowledge/auth/current-auth-session-flow.md`](knowledge/auth/current-auth-session-flow.md) | Flujo de sesión JWT |
+| [`knowledge/credits/current-credit-registration-flow.md`](knowledge/credits/current-credit-registration-flow.md) | Registro de crédito + confirmación |
+| [`knowledge/credits/current-credit-query-flow.md`](knowledge/credits/current-credit-query-flow.md) | Consulta/filtros de créditos |
+| [`knowledge/credits/current-credit-detail-flow.md`](knowledge/credits/current-credit-detail-flow.md) | Detalle de crédito: ver, editar, eliminar, historial de auditoría, exportar PDF |
+| [`knowledge/credits/current-credit-offline-queue-flow.md`](knowledge/credits/current-credit-offline-queue-flow.md) | Creación de créditos offline, cola local, sincronización |
+| [`knowledge/android/current-android-build-and-signing-flow.md`](knowledge/android/current-android-build-and-signing-flow.md) | Build y firma |
