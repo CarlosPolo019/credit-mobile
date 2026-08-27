@@ -9,5 +9,5 @@ export function formatCurrency(value: number | string) {
 export function formatDate(value?: string) {
   if (!value) return "-";
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "-" : date.toLocaleDateString("es-CO");
+  return Number.isNaN(date.getTime()) ? "-" : date.toLocaleString("es-CO");
 }
