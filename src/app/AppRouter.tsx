@@ -9,6 +9,7 @@ import { HomePage } from "@/pages/home/HomePage";
 import { LoginPage } from "@/pages/login/LoginPage";
 import { RegisterPage } from "@/pages/register/RegisterPage";
 import { colors, OfflineBanner } from "@/shared/ui";
+import { BackendWakeGate } from "./BackendWakeGate";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -33,7 +34,7 @@ export function AppRouter() {
     );
   }
 
-  return (
+  const navigator = (
     <View className="flex-1">
       <OfflineBanner />
       <Stack.Navigator
@@ -59,4 +60,9 @@ export function AppRouter() {
       </Stack.Navigator>
     </View>
   );
+
+  // Only the unauthenticated stack waits on the backend — there's no
+  // offline login. Once a session exists, the offline credit queue means
+  // the authenticated stack shouldn't be blocked on a health check at all.
+  return isAuthenticated ? navigator : <BackendWakeGate>{navigator}</BackendWakeGate>;
 }

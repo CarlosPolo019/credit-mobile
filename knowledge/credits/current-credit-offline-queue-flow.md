@@ -69,6 +69,7 @@ sequenceDiagram
 ## Alcance
 - Solo creacion de creditos funciona offline. Editar (`CreditForm` en modo `edit`), eliminar, exportar PDF, login y registro siempre requieren internet — si fallan sin conexion, `shared/api/client.ts` devuelve "Sin conexión. Revisa internet e intenta de nuevo." y la pantalla lo muestra como cualquier otro error.
 - No se toco el backend: `POST /api/v1/credits` es el mismo endpoint que usa la creacion online.
+- `src/app/BackendWakeGate.tsx` (cold start de Render) solo envuelve el stack **no autenticado**: una sesion ya iniciada nunca queda bloqueada esperando al backend, precisamente para que la cola offline pueda usarse mientras el backend esta dormido/arrancando, no solo cuando el dispositivo esta sin señal. Login/Register si esperan, porque no tienen modo offline.
 
 ## Errores
 - Sin conexion al llamar cualquier endpoint: `shared/api/client.ts` devuelve "Sin conexión. Revisa internet e intenta de nuevo." (en vez del mensaje generico).
