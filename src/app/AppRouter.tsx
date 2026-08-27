@@ -8,7 +8,7 @@ import { CreditListPage } from "@/pages/credit-list/CreditListPage";
 import { HomePage } from "@/pages/home/HomePage";
 import { LoginPage } from "@/pages/login/LoginPage";
 import { RegisterPage } from "@/pages/register/RegisterPage";
-import { colors } from "@/shared/ui";
+import { colors, OfflineBanner } from "@/shared/ui";
 
 export type RootStackParamList = {
   Login: undefined;
@@ -34,26 +34,29 @@ export function AppRouter() {
   }
 
   return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        contentStyle: { backgroundColor: colors.white },
-      }}
-    >
-      {isAuthenticated ? (
-        <>
-          <Stack.Screen name="Home" component={HomePage} options={{ title: "Créditos" }} />
-          <Stack.Screen name="CreditCreate" component={CreditCreatePage} options={{ title: "Registrar crédito" }} />
-          <Stack.Screen name="CreditList" component={CreditListPage} options={{ title: "Consultar créditos" }} />
-          <Stack.Screen name="CreditDetail" component={CreditDetailPage} options={{ title: "Detalle de crédito" }} />
-          <Stack.Screen name="CreditEdit" component={CreditEditPage} options={{ title: "Editar crédito" }} />
-        </>
-      ) : (
-        <>
-          <Stack.Screen name="Login" component={LoginPage} options={{ title: "Ingreso" }} />
-          <Stack.Screen name="Register" component={RegisterPage} options={{ title: "Registro" }} />
-        </>
-      )}
-    </Stack.Navigator>
+    <View className="flex-1">
+      <OfflineBanner />
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: colors.white },
+        }}
+      >
+        {isAuthenticated ? (
+          <>
+            <Stack.Screen name="Home" component={HomePage} options={{ title: "Créditos" }} />
+            <Stack.Screen name="CreditCreate" component={CreditCreatePage} options={{ title: "Registrar crédito" }} />
+            <Stack.Screen name="CreditList" component={CreditListPage} options={{ title: "Consultar créditos" }} />
+            <Stack.Screen name="CreditDetail" component={CreditDetailPage} options={{ title: "Detalle de crédito" }} />
+            <Stack.Screen name="CreditEdit" component={CreditEditPage} options={{ title: "Editar crédito" }} />
+          </>
+        ) : (
+          <>
+            <Stack.Screen name="Login" component={LoginPage} options={{ title: "Ingreso" }} />
+            <Stack.Screen name="Register" component={RegisterPage} options={{ title: "Registro" }} />
+          </>
+        )}
+      </Stack.Navigator>
+    </View>
   );
 }

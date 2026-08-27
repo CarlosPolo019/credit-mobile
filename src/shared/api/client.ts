@@ -33,6 +33,9 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       onUnauthorized();
     }
+    if (!error.response) {
+      return Promise.reject(new Error("Sin conexión. Revisa internet e intenta de nuevo."));
+    }
     const message = error.response?.data?.message ?? "No se pudo completar la solicitud.";
     return Promise.reject(new Error(message));
   },

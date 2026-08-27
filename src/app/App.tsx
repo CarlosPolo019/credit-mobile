@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useColorScheme } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { SessionProvider } from "@/entities/session/SessionContext";
+import { NetworkStatusProvider } from "@/shared/network/NetworkStatusContext";
 import { colors } from "@/shared/ui";
 import { AppRouter } from "./AppRouter";
 import { Splash } from "./Splash";
@@ -29,11 +30,13 @@ export function App() {
 
   return (
     <SafeAreaProvider>
-      <SessionProvider>
-        <NavigationContainer theme={navigationTheme}>
-          <AppContent />
-        </NavigationContainer>
-      </SessionProvider>
+      <NetworkStatusProvider>
+        <SessionProvider>
+          <NavigationContainer theme={navigationTheme}>
+            <AppContent />
+          </NavigationContainer>
+        </SessionProvider>
+      </NetworkStatusProvider>
     </SafeAreaProvider>
   );
 }

@@ -3,6 +3,7 @@ export { BottomSheetModal, type BottomSheetModalRef } from "./BottomSheetModal";
 export { Button } from "./Button";
 export { colors } from "./colors";
 export { ErrorMessage } from "./ErrorMessage";
+export { OfflineBanner } from "./OfflineBanner";
 export { Screen } from "./Screen";
 export { SectionFooterMessage } from "./SectionFooterMessage";
 export { SectionFooterSpinner } from "./SectionFooterSpinner";
