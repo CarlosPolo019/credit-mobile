@@ -2,6 +2,23 @@
 
 App Android (React Native) para la prueba técnica de créditos de Fya Social Capital — la contraparte para el comercial en campo de `credit-web`.
 
+## Índice
+- [Sobre esta prueba técnica](#sobre-esta-prueba-técnica)
+- [Arquitectura](#arquitectura)
+- [Stack](#stack)
+- [Estructura Feature-Sliced](#estructura-feature-sliced)
+- [Requisitos Previos](#requisitos-previos)
+- [Instalación Paso A Paso](#instalación-paso-a-paso)
+- [Configurar La URL Del Backend](#configurar-la-url-del-backend)
+- [Funcionalidades](#funcionalidades)
+- [Capturas](#capturas)
+- [Compilar APK](#compilar-apk)
+- [Compilar AAB](#compilar-aab)
+- [CI (GitHub Actions)](#ci-github-actions)
+- [Firma](#firma)
+- [Calidad](#calidad)
+- [Mapa De Documentación](#mapa-de-documentación)
+
 ## Sobre esta prueba técnica
 
 Este repo es **uno de los tres entregables independientes** de la prueba técnica de créditos:
