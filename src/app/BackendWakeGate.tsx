@@ -1,5 +1,5 @@
-import { type ReactNode, useEffect, useState } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { type ReactNode, useEffect, useRef, useState } from "react";
+import { Animated, Easing, Image, StyleSheet, Text, View } from "react-native";
 import { config } from "@/shared/config/env";
 import { useNetworkStatus } from "@/shared/network/NetworkStatusContext";
 import { colors } from "@/shared/ui";
@@ -79,6 +79,21 @@ export function BackendWakeGate({ children }: BackendWakeGateProps) {
   const [isReady, setIsReady] = useState(false);
   const [elapsedMs, setElapsedMs] = useState(0);
   const [rotationIndex, setRotationIndex] = useState(0);
+  const bounce = useRef(new Animated.Value(0)).current;
+  const bar = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(bounce, { toValue: 1, duration: 550, easing: Easing.out(Easing.cubic), useNativeDriver: true }),
+        Animated.timing(bounce, { toValue: 0, duration: 550, easing: Easing.in(Easing.cubic), useNativeDriver: true }),
+      ]),
+    ).start();
+    Animated.loop(
+      Animated.timing(bar, { toValue: 1, duration: 1300, easing: Easing.inOut(Easing.ease), useNativeDriver: false }),
+    ).start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     // No device connectivity at all: polling would just fail every time
@@ -136,13 +151,62 @@ export function BackendWakeGate({ children }: BackendWakeGateProps) {
 
   if (isReady) return children;
 
+  const logoTranslateY = bounce.interpolate({ inputRange: [0, 1], outputRange: [0, -24] });
+  const shadowScale = bounce.interpolate({ inputRange: [0, 1], outputRange: [1, 0.55] });
+  const shadowOpacity = bounce.interpolate({ inputRange: [0, 1], outputRange: [0.35, 0.12] });
+  const barLeft = bar.interpolate({ inputRange: [0, 1], outputRange: ["-40%", "100%"] });
+
   return (
-    <View className="flex-1 items-center justify-center gap-3 bg-white px-8 dark:bg-neutral-950">
-      <ActivityIndicator color={colors.brand700} size="large" />
+    <View className="flex-1 items-center justify-center gap-4 bg-white px-8 dark:bg-neutral-950">
+      <View style={styles.stage}>
+        <Animated.View style={[styles.shadow, { opacity: shadowOpacity, transform: [{ scale: shadowScale }] }]} />
+        <Animated.View style={{ transform: [{ translateY: logoTranslateY }] }}>
+          <Image source={require("../../assets/images/fya-mark.png")} style={styles.logo} resizeMode="contain" />
+        </Animated.View>
+      </View>
       <Text className="text-base font-semibold text-gray-900 dark:text-neutral-50">Despertando el servidor</Text>
       <Text className="text-center text-sm text-gray-500 dark:text-neutral-400">
         {messageForElapsed(elapsedMs, rotationIndex)}
       </Text>
+      <View style={styles.bar}>
+        <Animated.View style={[styles.barFill, { left: barLeft }]} />
+      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  stage: {
+    height: 96,
+    width: 96,
+    alignItems: "center",
+    justifyContent: "flex-end",
+  },
+  logo: {
+    width: 64,
+    height: 64,
+  },
+  shadow: {
+    position: "absolute",
+    bottom: 4,
+    width: 40,
+    height: 10,
+    borderRadius: 999,
+    backgroundColor: colors.ink,
+  },
+  bar: {
+    width: 200,
+    height: 6,
+    borderRadius: 999,
+    backgroundColor: colors.brand100,
+    overflow: "hidden",
+  },
+  barFill: {
+    position: "absolute",
+    top: 0,
+    height: "100%",
+    width: "40%",
+    borderRadius: 999,
+    backgroundColor: colors.brand600,
+  },
+});
