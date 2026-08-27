@@ -56,37 +56,37 @@ Este repo es **uno de los tres entregables independientes** de la prueba técnic
 
 ```mermaid
 flowchart LR
-  web["credit-web · React admin"] -->|REST + JWT| api["credit-backend · Spring Boot"]
-  mobile["credit-mobile · React Native"] -->|REST + JWT| api
-  api --> firestore[("Cloud Firestore")]
+  MOBILE[credit-mobile] --> API[credit-backend]
+  WEB[credit-web] --> API
+  API --> DB[Cloud Firestore]
 ```
 
 ### Registrar crédito (con confirmación, online)
 
 ```mermaid
 sequenceDiagram
-  participant User as Comercial
-  participant Form as CreditForm
-  participant Sheet as CreditConfirmSheetContent
-  participant API as credit-backend
-  Form->>API: GET /api/v1/clients (al montar, solo modo create)
-  API-->>Form: listado completo de clientes
-  User->>Form: Escribe la cédula (sugerencias filtran localmente)
-  alt cédula ya existe
-    User->>Form: Toca la sugerencia
-    Form->>Form: autocompleta el nombre, campos quedan solo lectura
-  else cédula nueva
-    User->>Form: Completa nombre, valor, tasa, plazo
+  participant User
+  participant Form
+  participant Sheet
+  participant API
+  Form->>API: GET clients
+  API-->>Form: Return clients
+  User->>Form: Type client document
+  alt Existing client
+    User->>Form: Select suggestion
+    Form->>Form: Fill client name
+  else New client
+    User->>Form: Fill credit data
   end
-  Form->>Form: valida (sin pedir Comercial: viene de la sesión)
-  Form->>API: POST /api/v1/credits/estimate
-  API-->>Form: cuota y total estimados
-  Form->>Sheet: abre resumen + estimación (recibida del backend)
-  User->>Sheet: Confirmar y registrar
-  Sheet->>API: POST /api/v1/credits (Bearer JWT)
-  API->>API: sincroniza el cliente en clients (upsert)
-  API-->>Sheet: 201 CreditResponse
-  Sheet-->>User: sheet se cierra, formulario se limpia
+  Form->>Form: Validate data
+  Form->>API: POST credit estimate
+  API-->>Form: Return estimate
+  Form->>Sheet: Open confirmation sheet
+  User->>Sheet: Confirm credit
+  Sheet->>API: POST credit with JWT
+  API->>API: Upsert client
+  API-->>Sheet: Return 201 response
+  Sheet-->>User: Clear form
 ```
 
 Sin internet, el registro sigue funcionando: se salta la estimación y el crédito se guarda en una cola local que se sincroniza sola al volver la conexión — ver [Offline](#offline).
