@@ -4,6 +4,7 @@ App Android (React Native) para la prueba técnica de créditos de Fya Social Ca
 
 ## Índice
 - [Sobre esta prueba técnica](#sobre-esta-prueba-técnica)
+- [Capturas](#capturas)
 - [Arquitectura](#arquitectura)
 - [Stack](#stack)
 - [Estructura Feature-Sliced](#estructura-feature-sliced)
@@ -12,12 +13,11 @@ App Android (React Native) para la prueba técnica de créditos de Fya Social Ca
 - [Configurar La URL Del Backend](#configurar-la-url-del-backend)
 - [Funcionalidades](#funcionalidades)
 - [Offline](#offline)
-- [Capturas](#capturas)
+- [Calidad](#calidad)
 - [Compilar APK](#compilar-apk)
 - [Compilar AAB](#compilar-aab)
 - [CI (GitHub Actions)](#ci-github-actions)
 - [Firma](#firma)
-- [Calidad](#calidad)
 - [Mapa De Documentación](#mapa-de-documentación)
 
 ## Sobre esta prueba técnica
@@ -29,6 +29,28 @@ Este repo es **uno de los tres entregables independientes** de la prueba técnic
 | `credit-backend` | API REST, Firestore, JWT, worker de correo | [github.com/CarlosPolo019/credit-backend](https://github.com/CarlosPolo019/credit-backend) |
 | `credit-web` | Panel administrativo (React) para registrar/consultar créditos y monitorear correos | [github.com/CarlosPolo019/credit-web](https://github.com/CarlosPolo019/credit-web) |
 | `credit-mobile` (este repo) | App Android (React Native) para el comercial en campo | — |
+
+## Capturas
+
+| Login | Home (admin) |
+|---|---|
+| ![Login](docs/screenshots/login.png) | ![Home admin](docs/screenshots/home-admin.png) |
+
+| Nav de 3 tabs (rol USER) | Registrar crédito |
+|---|---|
+| ![Nav rol USER](docs/screenshots/nav-user.png) | ![Registrar crédito](docs/screenshots/registrar-credito.png) |
+
+| Consultar créditos | Detalle de crédito |
+|---|---|
+| ![Consultar créditos](docs/screenshots/creditos-lista.png) | ![Detalle de crédito](docs/screenshots/credito-detalle.png) |
+
+| Correos (admin) | Clientes (admin) |
+|---|---|
+| ![Correos](docs/screenshots/correos.png) | ![Clientes](docs/screenshots/clientes.png) |
+
+| Perfil | |
+|---|---|
+| ![Perfil](docs/screenshots/perfil.png) | |
 
 ## Arquitectura
 
@@ -74,21 +96,21 @@ Sin internet, el registro sigue funcionando: se salta la estimación y el crédi
 | Capa | Tecnología |
 |---|---|
 | Runtime | React Native 0.83.0, React 19.2.0, TypeScript |
-| Navegación | React Navigation 7 |
+| Navegación | React Navigation 7 (`@react-navigation/native-stack` + `@react-navigation/bottom-tabs`, tabBar 100% custom) |
 | Estilos | NativeWind — layout inspirado en `challenge-blossom`, tokens de marca de Fya Social Capital (`brand-*`/`ink`, compartidos con `credit-web`) |
 | HTTP | Axios |
 | Iconos | lucide-react-native |
 | Sesión | react-native-keychain |
-| Exportar PDF | react-native-blob-util (descarga autenticada) + react-native-share (abrir/compartir) — el PDF se renderiza en el servidor, en `credit-backend` |
+| Ver PDF | Generado en `credit-backend` (`GET /credits/{id}/pdf`), se abre directo en el navegador del dispositivo (`Linking.openURL`) — la app no descarga ni renderiza el PDF |
 | Offline | @react-native-community/netinfo (detección de conectividad) + @react-native-async-storage/async-storage (cola local de créditos) |
 
 ## Estructura Feature-Sliced
 
 | Capa | Propósito | Doc |
 |---|---|---|
-| `src/app` | Providers y navegación | [`src/app/README.md`](src/app/README.md) |
-| `src/pages` | `login`, `register`, `home`, `credit-create`, `credit-list`, `credit-detail` | [`src/pages/README.md`](src/pages/README.md) |
-| `src/features` | APIs de `auth` y `credits` | [`src/features/README.md`](src/features/README.md) |
+| `src/app` | Providers, navegación (`MainTabs`/`AppRouter`) | [`src/app/README.md`](src/app/README.md) |
+| `src/pages` | `login`, `home`, `profile`, `credit-create`, `credit-list`, `credit-detail`, `client-list`, `email-job-list`, `dashboard` | [`src/pages/README.md`](src/pages/README.md) |
+| `src/features` | APIs de `auth`, `credits` y `email-jobs` | [`src/features/README.md`](src/features/README.md) |
 | `src/entities` | Reglas de sesión y crédito, formato, estimación de pago | [`src/entities/README.md`](src/entities/README.md) |
 | `src/shared` | Cliente API, config, storage, kit de UI | [`src/shared/README.md`](src/shared/README.md) |
 
@@ -126,6 +148,8 @@ Para el emulador Android local, el valor por defecto es:
 ```text
 http://10.0.2.2:8080
 ```
+
+Para un dispositivo físico conectado por USB, `npm run android:device` / `npm run start:device` ya traen la URL de producción (`https://fyatest-api.cmescorcia.com`) hardcodeada, para no tener que escribirla cada vez.
 
 Para builds de release, seteá `CREDIT_API_BASE_URL` antes de correr el comando de build:
 
@@ -168,27 +192,13 @@ El comercial en campo no siempre tiene señal — registrar un crédito es la ú
 - **Cold start del backend**: como el backend gratuito (Render) se duerme tras inactividad, `BackendWakeGate` hace polling a `/actuator/health` con una pantalla animada de espera antes de dejar entrar al login — pero solo bloquea el flujo **sin sesión**; con sesión ya iniciada la app nunca espera al backend, justamente para que la cola offline sirva de algo aunque el servidor esté dormido.
 - Detalle completo, diagrama de secuencia y casos borde: [`knowledge/credits/current-credit-offline-queue-flow.md`](knowledge/credits/current-credit-offline-queue-flow.md).
 
-## Capturas
+## Calidad
 
-| Login | Home (admin) |
-|---|---|
-| ![Login](docs/screenshots/login.png) | ![Home admin](docs/screenshots/home-admin.png) |
-
-| Nav de 3 tabs (rol USER) | Registrar crédito |
-|---|---|
-| ![Nav rol USER](docs/screenshots/nav-user.png) | ![Registrar crédito](docs/screenshots/registrar-credito.png) |
-
-| Consultar créditos | Detalle de crédito |
-|---|---|
-| ![Consultar créditos](docs/screenshots/creditos-lista.png) | ![Detalle de crédito](docs/screenshots/credito-detalle.png) |
-
-| Correos (admin) | Clientes (admin) |
-|---|---|
-| ![Correos](docs/screenshots/correos.png) | ![Clientes](docs/screenshots/clientes.png) |
-
-| Perfil | |
-|---|---|
-| ![Perfil](docs/screenshots/perfil.png) | |
+```bash
+npm run typecheck
+npm run lint
+npm test
+```
 
 ## Compilar APK
 
@@ -221,14 +231,6 @@ La firma de producción usa:
 
 El workflow de CI escribe `release.keystore` solo durante los runs de CI. Los builds locales caen a un keystore de debug para poder generar un APK instalable sin secrets de producción. Gradle consume `RELEASE_STORE_FILE`, `RELEASE_STORE_PASSWORD`, `RELEASE_KEY_ALIAS`, `RELEASE_KEY_PASSWORD`.
 
-## Calidad
-
-```bash
-npm run typecheck
-npm run lint
-npm test
-```
-
 ## Mapa De Documentación
 
 | Archivo | Qué cubre |
@@ -239,6 +241,6 @@ npm test
 | [`knowledge/auth/current-auth-session-flow.md`](knowledge/auth/current-auth-session-flow.md) | Flujo de sesión JWT |
 | [`knowledge/credits/current-credit-registration-flow.md`](knowledge/credits/current-credit-registration-flow.md) | Registro de crédito + confirmación |
 | [`knowledge/credits/current-credit-query-flow.md`](knowledge/credits/current-credit-query-flow.md) | Consulta/filtros de créditos |
-| [`knowledge/credits/current-credit-detail-flow.md`](knowledge/credits/current-credit-detail-flow.md) | Detalle de crédito: ver, editar, eliminar, historial de auditoría, exportar PDF |
+| [`knowledge/credits/current-credit-detail-flow.md`](knowledge/credits/current-credit-detail-flow.md) | Detalle de crédito: ver, editar, eliminar, historial de auditoría, ver PDF |
 | [`knowledge/credits/current-credit-offline-queue-flow.md`](knowledge/credits/current-credit-offline-queue-flow.md) | Creación de créditos offline, cola local, sincronización |
 | [`knowledge/android/current-android-build-and-signing-flow.md`](knowledge/android/current-android-build-and-signing-flow.md) | Build y firma |
