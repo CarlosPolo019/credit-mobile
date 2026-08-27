@@ -112,6 +112,43 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
     setErrors((previous) => ({ ...previous, [key]: "" }));
   };
 
+  // Digits-only, clamped to the max so it's impossible to end up with a
+  // value the backend would reject anyway — same idea as an input mask,
+  // mirrors credit-web's CreditForm.jsx. Stored as plain digits (no "."
+  // formatting) so validateCredit/estimateCredit keep getting exactly what
+  // they got before.
+  const setAmount = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+    const nextValue = digits === "" ? "" : String(Math.min(Number(digits), creditLimits.maxAmount));
+    setValues((previous) => ({ ...previous, amount: nextValue }));
+    setErrors((previous) => ({ ...previous, amount: "" }));
+  };
+
+  const setTermMonths = (value: string) => {
+    const digits = value.replace(/\D/g, "");
+    const nextValue = digits === "" ? "" : String(Math.min(Number(digits), creditLimits.maxTermMonths));
+    setValues((previous) => ({ ...previous, termMonths: nextValue }));
+    setErrors((previous) => ({ ...previous, termMonths: "" }));
+  };
+
+  const setInterestRate = (value: string) => {
+    let cleaned = value.replace(/[^\d.]/g, "");
+    const firstDot = cleaned.indexOf(".");
+    if (firstDot !== -1) {
+      cleaned = cleaned.slice(0, firstDot + 1) + cleaned.slice(firstDot + 1).replace(/\./g, "");
+    }
+    // A trailing "." (or an empty field) is a mid-typing state — don't
+    // clamp yet, or "3." would jump to "3.5" before the decimals land.
+    if (cleaned !== "" && !cleaned.endsWith(".")) {
+      const numeric = Number(cleaned);
+      if (Number.isFinite(numeric) && numeric > creditLimits.maxInterestRate) {
+        cleaned = String(creditLimits.maxInterestRate);
+      }
+    }
+    setValues((previous) => ({ ...previous, interestRate: cleaned }));
+    setErrors((previous) => ({ ...previous, interestRate: "" }));
+  };
+
   const review = async () => {
     const validation = validateCredit(values);
     if (!validation.isValid) {
@@ -201,9 +238,10 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
         </View>
         <TextField
           label="Valor del crédito"
-          value={values.amount}
-          onChangeText={(value) => setValue("amount", value)}
+          value={values.amount ? Number(values.amount).toLocaleString("es-CO") : ""}
+          onChangeText={setAmount}
           keyboardType="numeric"
+          prefix="$"
           error={errors.amount}
           helperText={`Máximo ${creditLimits.maxAmount.toLocaleString("es-CO")}`}
         />
@@ -212,7 +250,7 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
             className="flex-1"
             label="Tasa de interés (%)"
             value={values.interestRate}
-            onChangeText={(value) => setValue("interestRate", value)}
+            onChangeText={setInterestRate}
             keyboardType="numeric"
             error={errors.interestRate}
             helperText={`Entre ${creditLimits.minInterestRate}% y ${creditLimits.maxInterestRate}%`}
@@ -221,7 +259,7 @@ export function CreditForm({ mode, initialValues, salespersonLabel, onSubmit }: 
             className="flex-1"
             label="Plazo (meses)"
             value={values.termMonths}
-            onChangeText={(value) => setValue("termMonths", value)}
+            onChangeText={setTermMonths}
             keyboardType="numeric"
             error={errors.termMonths}
             helperText={`Entre ${creditLimits.minTermMonths} y ${creditLimits.maxTermMonths} meses`}
