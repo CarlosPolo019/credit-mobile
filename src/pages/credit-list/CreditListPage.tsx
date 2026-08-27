@@ -1,5 +1,5 @@
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ArrowLeft, CreditCard, Search, SlidersVertical } from "lucide-react-native";
+import { ArrowLeft, ChevronLeft, ChevronRight, CreditCard, Search, SlidersVertical } from "lucide-react-native";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ActivityIndicator,
@@ -29,6 +29,7 @@ import { CreditFiltersSheetContent } from "./CreditFiltersSheetContent";
 type CreditListPageProps = NativeStackScreenProps<RootStackParamList, "CreditList">;
 
 const SEARCH_DEBOUNCE_MS = 400;
+const PAGE_SIZE = 6;
 
 const defaultFilters: CreditFilters = {
   clientName: "",
@@ -47,6 +48,7 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [salespersonOptions, setSalespersonOptions] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
     // One-time, unfiltered fetch just to know which comerciales exist, so
@@ -88,6 +90,24 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
     load();
   }, [load]);
 
+  // A new search/filter/sort starts back at page 1.
+  useEffect(() => {
+    setPage(1);
+  }, [filters]);
+
+  const pageCount = Math.max(1, Math.ceil(credits.length / PAGE_SIZE));
+  // Derive the in-range page synchronously so a stale `page` after
+  // `credits` shrinks never slices to an empty page for a frame.
+  const clampedPage = Math.min(page, pageCount);
+  useEffect(() => {
+    if (page !== clampedPage) setPage(clampedPage);
+  }, [page, clampedPage]);
+
+  const pagedCredits = useMemo(
+    () => credits.slice((clampedPage - 1) * PAGE_SIZE, clampedPage * PAGE_SIZE),
+    [credits, clampedPage],
+  );
+
   const toggleSort = useCallback(() => {
     setFilters((previous) => ({
       ...previous,
@@ -100,7 +120,7 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
     filtersSheetRef.current?.dismiss();
   }, []);
 
-  const sections = useMemo(() => [{ title: "Créditos activos", data: credits }], [credits]);
+  const sections = useMemo(() => [{ title: "Créditos activos", data: pagedCredits }], [pagedCredits]);
   const isInitialLoad = loading && credits.length === 0;
 
   return (
@@ -159,6 +179,38 @@ export function CreditListPage({ navigation }: CreditListPageProps) {
           contentContainerStyle={styles.listContent}
         />
       )}
+
+      {!isInitialLoad && !error && pageCount > 1 ? (
+        <View className="flex-row items-center justify-between border-t border-gray-200 py-3 dark:border-neutral-800">
+          <TouchableOpacity
+            onPress={() => setPage((previous) => Math.max(1, previous - 1))}
+            disabled={clampedPage <= 1}
+            activeOpacity={0.6}
+            hitSlop={8}
+            className="flex-row items-center gap-1 p-2"
+          >
+            <ChevronLeft color={clampedPage <= 1 ? colors.gray300 : isDarkMode ? colors.brand400 : colors.brand700} size={20} />
+            <Text className={`text-sm font-semibold ${clampedPage <= 1 ? "text-gray-300 dark:text-neutral-700" : "text-gray-900 dark:text-neutral-50"}`}>
+              Anterior
+            </Text>
+          </TouchableOpacity>
+          <Text className="text-sm text-gray-500 dark:text-neutral-400">
+            Página {clampedPage} de {pageCount}
+          </Text>
+          <TouchableOpacity
+            onPress={() => setPage((previous) => Math.min(pageCount, previous + 1))}
+            disabled={clampedPage >= pageCount}
+            activeOpacity={0.6}
+            hitSlop={8}
+            className="flex-row items-center gap-1 p-2"
+          >
+            <Text className={`text-sm font-semibold ${clampedPage >= pageCount ? "text-gray-300 dark:text-neutral-700" : "text-gray-900 dark:text-neutral-50"}`}>
+              Siguiente
+            </Text>
+            <ChevronRight color={clampedPage >= pageCount ? colors.gray300 : isDarkMode ? colors.brand400 : colors.brand700} size={20} />
+          </TouchableOpacity>
+        </View>
+      ) : null}
 
       <BottomSheetModal ref={filtersSheetRef}>
         <CreditFiltersSheetContent
